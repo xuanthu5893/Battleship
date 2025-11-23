@@ -415,14 +415,26 @@ h3 {
 }
 
 .battle-boards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 30px;
 }
 
 .board-section {
     text-align: center;
+}
+
+.board-section-center {
+    max-width: 600px;
+    width: 100%;
+}
+
+.board-hint {
+    color: #4dd0e1;
+    font-size: 0.95em;
+    margin-bottom: 20px;
+    font-style: italic;
 }
 
 .legend {
@@ -637,8 +649,11 @@ h3 {
     }
 
     .battle-boards {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        /* Already centered, no change needed */
+    }
+
+    .board-section-center {
+        max-width: 100%;
     }
 
     .board {

@@ -38,10 +38,12 @@
                             <li><strong>Tip:</strong> Nhấn R hoặc nút Rotate để xoay tàu</li>
                         </ul>
                     </li>
-                    <li><strong>Battle Phase:</strong> Bắn luân phiên, mỗi lượt 1 phát
+                    <li><strong>Battle Phase:</strong> Cả 2 người cùng nhìn màn hình
                         <ul>
+                            <li>Bắn luân phiên, mỗi lượt 1 phát</li>
                             <li>Trúng cũng đổi lượt (không bắn liên tiếp)</li>
                             <li>Không được bắn lại ô đã bắn</li>
+                            <li>Không ai thấy tàu của ai - chỉ thấy kết quả bắn</li>
                             <li>Phá hủy toàn bộ ô của 1 tàu → tàu bị đánh chìm</li>
                         </ul>
                     </li>
@@ -135,8 +137,9 @@
             </div>
 
             <div class="battle-boards">
-                <div class="board-section">
-                    <h3>My Fleet</h3>
+                <div class="board-section board-section-center">
+                    <h3>Battle Grid</h3>
+                    <p class="board-hint">Both players face the screen. Click to attack on your turn.</p>
                     <div class="board-container">
                         <div class="board-labels-top">
                             <span></span>
@@ -148,25 +151,7 @@
                                 <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
                                 <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
                             </div>
-                            <div id="myFleetBoard" class="board readonly"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="board-section">
-                    <h3>Enemy Waters</h3>
-                    <div class="board-container">
-                        <div class="board-labels-top">
-                            <span></span>
-                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
-                            <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
-                        </div>
-                        <div class="board-wrapper">
-                            <div class="board-labels-left">
-                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                                <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-                            </div>
-                            <div id="enemyWatersBoard" class="board"></div>
+                            <div id="battleBoard" class="board"></div>
                         </div>
                     </div>
                 </div>
@@ -174,10 +159,9 @@
 
             <div class="legend">
                 <span><strong>Legend:</strong></span>
-                <span class="legend-item"><span class="cell-demo ship-cell">S</span> = ship</span>
                 <span class="legend-item"><span class="cell-demo hit-cell">X</span> = hit</span>
                 <span class="legend-item"><span class="cell-demo miss-cell">o</span> = miss</span>
-                <span class="legend-item"><span class="cell-demo sunk-cell">#</span> = sunk</span>
+                <span class="legend-item"><span class="cell-demo sunk-cell">#</span> = sunk ship</span>
             </div>
 
             <div class="status-bar">

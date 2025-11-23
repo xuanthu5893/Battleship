@@ -456,10 +456,11 @@ function confirmSetup() {
         showPassScreen('Please hand the device to Player 2');
     } else {
         // Player 2 setup complete, ready to start battle
+        // NO pass screen needed - both players face the screen together
         gameState.setupPhase = 'battle'; // Mark setup as complete
         gameState.gameStartTime = Date.now();
         gameState.currentPlayer = 1; // Battle starts with player 1
-        showPassScreen('Player 1 starts! Get ready...');
+        showBattleScreen(); // Go directly to battle
     }
 }
 
@@ -494,49 +495,12 @@ function showBattleScreen() {
 
 function renderBattleBoards() {
     const currentPlayerData = getCurrentPlayer();
-    const opponentData = getOpponentPlayer();
+    const player1 = gameState.player1;
+    const player2 = gameState.player2;
 
-    // Render My Fleet (current player's board with ships visible)
-    const myFleetBoard = document.getElementById('myFleetBoard');
-    myFleetBoard.innerHTML = '';
-
-    for (let row = 0; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-
-            // Show own ships
-            if (currentPlayerData.board[row][col] === 1) {
-                cell.classList.add('ship');
-                cell.textContent = 'S';
-            }
-
-            // Show opponent's attacks on my board
-            if (opponentData.attacks[row][col] === 1) {
-                cell.classList.add('miss');
-                cell.textContent = 'o';
-            } else if (opponentData.attacks[row][col] === 2) {
-                cell.classList.add('hit');
-                cell.textContent = 'X';
-            }
-
-            // Check if ship is sunk
-            const ship = currentPlayerData.ships.find(s =>
-                s.cells.some(([r, c]) => r === row && c === col)
-            );
-            if (ship && ship.sunk) {
-                cell.classList.remove('hit');
-                cell.classList.add('sunk');
-                cell.textContent = '#';
-            }
-
-            myFleetBoard.appendChild(cell);
-        }
-    }
-
-    // Render Enemy Waters (opponent's board from attacker's perspective)
-    const enemyBoard = document.getElementById('enemyWatersBoard');
-    enemyBoard.innerHTML = '';
+    // Render single battle board showing all attacks from both players
+    const battleBoard = document.getElementById('battleBoard');
+    battleBoard.innerHTML = '';
 
     for (let row = 0; row < BOARD_SIZE; row++) {
         for (let col = 0; col < BOARD_SIZE; col++) {
@@ -545,31 +509,60 @@ function renderBattleBoards() {
             cell.dataset.row = row;
             cell.dataset.col = col;
 
-            // Show my attacks on enemy board
-            if (currentPlayerData.attacks[row][col] === 1) {
-                cell.classList.add('miss');
-                cell.textContent = 'o';
-            } else if (currentPlayerData.attacks[row][col] === 2) {
-                cell.classList.add('hit');
-                cell.textContent = 'X';
+            // Check if Player 1 attacked this cell
+            let attacked = false;
+            if (player1.attacks[row][col] !== 0) {
+                attacked = true;
+                if (player1.attacks[row][col] === 1) {
+                    cell.classList.add('miss');
+                    cell.textContent = 'o';
+                } else if (player1.attacks[row][col] === 2) {
+                    cell.classList.add('hit');
+                    cell.textContent = 'X';
+                }
+
+                // Check if this hit resulted in a sunk ship on player 2
+                const sunkShip = player2.ships.find(s =>
+                    s.sunk && s.cells.some(([r, c]) => r === row && c === col)
+                );
+                if (sunkShip) {
+                    cell.classList.remove('hit');
+                    cell.classList.add('sunk');
+                    cell.textContent = '#';
+                }
             }
 
-            // Check if enemy ship at this position is sunk
-            const enemyShip = opponentData.ships.find(s =>
-                s.cells.some(([r, c]) => r === row && c === col)
-            );
-            if (enemyShip && enemyShip.sunk) {
-                cell.classList.remove('hit');
-                cell.classList.add('sunk');
-                cell.textContent = '#';
+            // Check if Player 2 attacked this cell
+            if (player2.attacks[row][col] !== 0) {
+                attacked = true;
+                if (player2.attacks[row][col] === 1) {
+                    cell.classList.add('miss');
+                    cell.textContent = 'o';
+                } else if (player2.attacks[row][col] === 2) {
+                    cell.classList.add('hit');
+                    cell.textContent = 'X';
+                }
+
+                // Check if this hit resulted in a sunk ship on player 1
+                const sunkShip = player1.ships.find(s =>
+                    s.sunk && s.cells.some(([r, c]) => r === row && c === col)
+                );
+                if (sunkShip) {
+                    cell.classList.remove('hit');
+                    cell.classList.add('sunk');
+                    cell.textContent = '#';
+                }
             }
 
-            // Only clickable if not already attacked
-            if (currentPlayerData.attacks[row][col] === 0) {
+            // Only clickable if not already attacked and it's current player's turn
+            if (!attacked && currentPlayerData === getCurrentPlayer()) {
                 cell.addEventListener('click', handleAttack);
+                cell.style.cursor = 'pointer';
+            } else {
+                cell.style.cursor = 'not-allowed';
             }
 
-            enemyBoard.appendChild(cell);
+            battleBoard.appendChild(cell);
         }
     }
 }
@@ -588,7 +581,7 @@ function handleAttack(e) {
     }
 
     // Disable all cells during attack processing
-    document.querySelectorAll('#enemyWatersBoard .cell').forEach(cell => {
+    document.querySelectorAll('#battleBoard .cell').forEach(cell => {
         cell.style.pointerEvents = 'none';
     });
 
@@ -661,10 +654,12 @@ function handleAttack(e) {
 
     renderBattleBoards();
 
-    // Switch turn after delay
+    // Switch turn after delay (NO pass screen - both players watch together)
     setTimeout(() => {
         gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
-        showPassScreen(`Please hand the device to Player ${gameState.currentPlayer}`);
+        document.getElementById('currentTurn').textContent = `Player ${gameState.currentPlayer}`;
+        updateBattleStatus(`Player ${gameState.currentPlayer}, choose a cell to fire`);
+        renderBattleBoards(); // Re-render to update clickable cells
     }, 2500);
 }
 
