@@ -363,6 +363,13 @@ h3 {
     opacity: 0.5;
 }
 
+.cell.forbidden-preview {
+    background: #fff9c4;
+    border-color: #fdd835;
+    opacity: 0.6;
+    animation: forbiddenPulse 1s ease-in-out infinite;
+}
+
 .cell.hit {
     background: #ef5350;
     border-color: #c62828;
@@ -728,6 +735,15 @@ h3 {
     }
     50% {
         transform: scale(1.05);
+    }
+}
+
+@keyframes forbiddenPulse {
+    0%, 100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 0.7;
     }
 }
 
