@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship 2P - Offline Pass-Play</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Menu Screen -->
+    <div id="mainMenu" class="screen active">
+        <div class="container">
+            <h1 class="title">BATTLESHIP 2P</h1>
+            <p class="subtitle">(Offline Pass-Play)</p>
+
+            <div class="menu-buttons">
+                <button class="btn btn-primary" onclick="startGame()">Start Game</button>
+                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
+                <button class="btn btn-secondary" onclick="showSettings()">Settings</button>
+            </div>
+
+            <p class="version">version 1.0.0</p>
+        </div>
+    </div>
+
+    <!-- How to Play Modal -->
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <h2>HOW TO PLAY</h2>
+            <div class="instructions">
+                <ol>
+                    <li>Mỗi người đặt 4 tàu trên lưới 10x10
+                        <ul>
+                            <li>1 tàu 2 ô, 2 tàu 3 ô, 1 tàu 4 ô</li>
+                            <li>Tàu không chồng và không chạm nhau</li>
+                        </ul>
+                    </li>
+                    <li>Bắn luân phiên, mỗi lượt 1 phát
+                        <ul>
+                            <li>Trúng cũng đổi lượt</li>
+                        </ul>
+                    </li>
+                    <li>Ai mất hết tàu trước thì thua</li>
+                </ol>
+            </div>
+            <button class="btn btn-primary" onclick="closeHowToPlay()">Got it</button>
+        </div>
+    </div>
+
+    <!-- Setup Screen -->
+    <div id="setupScreen" class="screen">
+        <div class="container-wide">
+            <h2 id="setupTitle">Setup - Player 1</h2>
+            <p class="setup-instruction">Place your ships (no touching, even corners)</p>
+
+            <div class="ships-panel">
+                <h3>Ships left:</h3>
+                <div class="ships-container">
+                    <div class="ship-item" data-length="2" data-count="1" onclick="selectShip(2)">
+                        <div class="ship-preview ship-len-2">
+                            <div class="ship-cell"></div>
+                            <div class="ship-cell"></div>
+                        </div>
+                        <span class="ship-count">x<span id="ship-2-count">1</span></span>
+                    </div>
+                    <div class="ship-item" data-length="3" data-count="2" onclick="selectShip(3)">
+                        <div class="ship-preview ship-len-3">
+                            <div class="ship-cell"></div>
+                            <div class="ship-cell"></div>
+                            <div class="ship-cell"></div>
+                        </div>
+                        <span class="ship-count">x<span id="ship-3-count">2</span></span>
+                    </div>
+                    <div class="ship-item" data-length="4" data-count="1" onclick="selectShip(4)">
+                        <div class="ship-preview ship-len-4">
+                            <div class="ship-cell"></div>
+                            <div class="ship-cell"></div>
+                            <div class="ship-cell"></div>
+                            <div class="ship-cell"></div>
+                        </div>
+                        <span class="ship-count">x<span id="ship-4-count">1</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="rotateShip()">Rotate</button>
+                <button class="btn btn-secondary" onclick="randomPlacement()">Random</button>
+                <button class="btn btn-secondary" onclick="resetBoard()">Reset</button>
+            </div>
+
+            <div class="board-container">
+                <div class="board-labels-top">
+                    <span></span>
+                    <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+                    <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+                </div>
+                <div class="board-wrapper">
+                    <div class="board-labels-left">
+                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                    </div>
+                    <div id="setupBoard" class="board"></div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <p id="setupStatus">Select a ship, hover board to preview</p>
+            </div>
+
+            <button id="readyButton" class="btn btn-primary btn-large" onclick="confirmSetup()" disabled>Ready</button>
+        </div>
+    </div>
+
+    <!-- Pass Device Screen -->
+    <div id="passDeviceScreen" class="screen overlay">
+        <div class="container">
+            <h1>PASS DEVICE</h1>
+            <p class="pass-message" id="passMessage">Please hand the device to Player 2</p>
+            <button class="btn btn-primary btn-large" onclick="acknowledgePass()">I'm ready</button>
+        </div>
+    </div>
+
+    <!-- Battle Screen -->
+    <div id="battleScreen" class="screen">
+        <div class="container-wide">
+            <div class="battle-header">
+                <h2>Battle Phase</h2>
+                <div class="turn-indicator">Turn: <span id="currentTurn">Player 1</span></div>
+            </div>
+
+            <div class="battle-boards">
+                <div class="board-section">
+                    <h3>My Fleet</h3>
+                    <div class="board-container">
+                        <div class="board-labels-top">
+                            <span></span>
+                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+                            <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+                        </div>
+                        <div class="board-wrapper">
+                            <div class="board-labels-left">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                                <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                            </div>
+                            <div id="myFleetBoard" class="board readonly"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-section">
+                    <h3>Enemy Waters</h3>
+                    <div class="board-container">
+                        <div class="board-labels-top">
+                            <span></span>
+                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+                            <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+                        </div>
+                        <div class="board-wrapper">
+                            <div class="board-labels-left">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                                <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                            </div>
+                            <div id="enemyWatersBoard" class="board"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <span><strong>Legend:</strong></span>
+                <span class="legend-item"><span class="cell-demo ship-cell">S</span> = ship</span>
+                <span class="legend-item"><span class="cell-demo hit-cell">X</span> = hit</span>
+                <span class="legend-item"><span class="cell-demo miss-cell">o</span> = miss</span>
+                <span class="legend-item"><span class="cell-demo sunk-cell">#</span> = sunk</span>
+            </div>
+
+            <div class="status-bar">
+                <p id="battleStatus">Player 1, choose a cell to fire</p>
+            </div>
+
+            <div class="battle-controls">
+                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
+                <button class="btn btn-secondary" onclick="toggleSound()">
+                    SFX: <span id="soundStatus">ON</span>
+                </button>
+                <button class="btn btn-secondary" onclick="quitGame()">Quit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battle Result Toast -->
+    <div id="battleToast" class="toast">
+        <div class="toast-content">
+            <h3 id="toastTitle">HIT!</h3>
+            <p id="toastMessage"></p>
+        </div>
+    </div>
+
+    <!-- Endgame Screen -->
+    <div id="endgameScreen" class="screen overlay">
+        <div class="container">
+            <h1>GAME OVER</h1>
+            <h2 id="winnerText">Player 1 WINS!</h2>
+
+            <div class="stats">
+                <h3>Stats:</h3>
+                <ul>
+                    <li>Turns: <span id="statTurns">0</span></li>
+                    <li>Hits / Misses: <span id="statHits">0</span> / <span id="statMisses">0</span></li>
+                    <li>Accuracy: <span id="statAccuracy">0%</span></li>
+                    <li>Duration: <span id="statDuration">00:00</span></li>
+                </ul>
+            </div>
+
+            <div class="menu-buttons">
+                <button class="btn btn-primary" onclick="rematch()">Rematch</button>
+                <button class="btn btn-secondary" onclick="goHome()">Home</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settingsScreen" class="screen">
+        <div class="container">
+            <h2>SETTINGS</h2>
+
+            <div class="settings-options">
+                <div class="setting-item">
+                    <label>Sound Effects:</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="soundToggle" checked onchange="toggleSoundSetting()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <label>Animations:</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="animationToggle" checked onchange="toggleAnimationSetting()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <label>Coordinate Style:</label>
+                    <select id="coordStyle" onchange="updateCoordStyle()">
+                        <option value="letters">A-J / 1-10</option>
+                        <option value="numbers">1-10 / 1-10</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="closeSettings()">Back</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
