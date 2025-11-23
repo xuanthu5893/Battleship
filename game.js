@@ -6,6 +6,92 @@ const SHIPS = [
     { length: 4, count: 1 }
 ];
 
+// ===== SOUND SYSTEM =====
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new AudioContext();
+    }
+}
+
+function playSound(type) {
+    if (!gameState.settings.sound) return;
+
+    initAudio();
+
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    switch(type) {
+        case 'hit':
+            // Explosion sound
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(200, now);
+            oscillator.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            oscillator.start(now);
+            oscillator.stop(now + 0.3);
+            break;
+
+        case 'miss':
+            // Splash sound
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(800, now);
+            oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+            gainNode.gain.setValueAtTime(0.15, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            oscillator.start(now);
+            oscillator.stop(now + 0.2);
+            break;
+
+        case 'sunk':
+            // Big explosion sound
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(300, now);
+            oscillator.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+            gainNode.gain.setValueAtTime(0.4, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            oscillator.start(now);
+            oscillator.stop(now + 0.5);
+
+            // Add second oscillator for more depth
+            setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.type = 'square';
+                const now2 = audioCtx.currentTime;
+                osc2.frequency.setValueAtTime(150, now2);
+                osc2.frequency.exponentialRampToValueAtTime(20, now2 + 0.4);
+                gain2.gain.setValueAtTime(0.2, now2);
+                gain2.gain.exponentialRampToValueAtTime(0.01, now2 + 0.4);
+                osc2.start(now2);
+                osc2.stop(now2 + 0.4);
+            }, 100);
+            break;
+
+        case 'place':
+            // Ship placement sound
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, now);
+            oscillator.frequency.setValueAtTime(550, now + 0.05);
+            gainNode.gain.setValueAtTime(0.1, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            oscillator.start(now);
+            oscillator.stop(now + 0.1);
+            break;
+    }
+}
+
 let gameState = {
     currentScreen: 'mainMenu',
     currentPlayer: 1,
@@ -311,6 +397,12 @@ function renderSetupBoard() {
 
             if (player.board[row][col] === 1) {
                 cell.classList.add('ship');
+
+                // Add ship head indicator
+                const shipHead = findShipHead(player, row, col);
+                if (shipHead) {
+                    cell.classList.add(`ship-head-${shipHead}`);
+                }
             } else if (player.board[row][col] === -1) {
                 cell.classList.add('forbidden');
             }
@@ -322,6 +414,30 @@ function renderSetupBoard() {
             board.appendChild(cell);
         }
     }
+}
+
+function findShipHead(player, row, col) {
+    // Find which ship this cell belongs to
+    const ship = player.ships.find(s =>
+        s.cells.some(([r, c]) => r === row && c === col)
+    );
+
+    if (!ship) return null;
+
+    // Check if this is the head (first cell) of the ship
+    const [headRow, headCol] = ship.cells[0];
+    if (headRow !== row || headCol !== col) return null;
+
+    // Determine direction based on second cell
+    if (ship.cells.length > 1) {
+        const [nextRow, nextCol] = ship.cells[1];
+        if (nextRow > headRow) return 'down';
+        if (nextRow < headRow) return 'up';
+        if (nextCol > headCol) return 'right';
+        if (nextCol < headCol) return 'left';
+    }
+
+    return null;
 }
 
 function handleSetupHover(e) {
@@ -396,6 +512,9 @@ function handleSetupClick(e) {
     if (canPlaceShip(player, row, col, gameState.selectedShip, gameState.isHorizontal)) {
         placeShip(player, row, col, gameState.selectedShip, gameState.isHorizontal);
         player.shipsRemaining[gameState.selectedShip]--;
+
+        // Play ship placement sound
+        playSound('place');
 
         if (player.shipsRemaining[gameState.selectedShip] === 0) {
             gameState.selectedShip = null;
@@ -686,6 +805,9 @@ function handleAttack(e) {
                 currentPlayerData.shipsDestroyed++;
                 result = 'sunk';
 
+                // Play sunk sound
+                playSound('sunk');
+
                 const shipName = getShipName(hitShip.length);
                 toastMessage = `You destroyed opponent's ${shipName}!`;
                 showToast('HIT!', toastMessage);
@@ -709,12 +831,17 @@ function handleAttack(e) {
                     return;
                 }
             } else {
+                // Play hit sound
+                playSound('hit');
                 showToast('HIT!', 'Direct hit!');
             }
         }
     } else {
         currentPlayerData.attacks[row][col] = 1; // Miss
         currentPlayerData.misses++;
+
+        // Play miss sound
+        playSound('miss');
         showToast('MISS', 'You missed!');
     }
 
