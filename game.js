@@ -450,10 +450,13 @@ function confirmSetup() {
 
     if (gameState.setupPhase === 'player1') {
         gameState.setupPhase = 'player2';
+        gameState.currentPlayer = 2; // Switch to player 2 for setup
+        gameState.selectedShip = null; // Reset selection for player 2
+        gameState.isHorizontal = true; // Reset orientation
         showPassScreen('Please hand the device to Player 2');
     } else {
         gameState.gameStartTime = Date.now();
-        gameState.currentPlayer = 1;
+        gameState.currentPlayer = 1; // Battle starts with player 1
         showPassScreen('Player 1 starts! Get ready...');
     }
 }
