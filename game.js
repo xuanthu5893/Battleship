@@ -20,7 +20,9 @@ let gameState = {
         hits: 0,
         misses: 0,
         attacks: Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)),
-        shipsDestroyed: 0
+        shipsDestroyed: 0,
+        captainImage: null, // Base64 image data
+        captainName: 'Player 1'
     },
 
     player2: {
@@ -30,7 +32,9 @@ let gameState = {
         hits: 0,
         misses: 0,
         attacks: Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)),
-        shipsDestroyed: 0
+        shipsDestroyed: 0,
+        captainImage: null, // Base64 image data
+        captainName: 'Player 2'
     },
 
     settings: {
@@ -120,7 +124,54 @@ function showSetupScreen(playerNum) {
     renderSetupBoard();
     updateSetupStatus('Select a ship, hover board to preview');
     document.getElementById('readyButton').disabled = !isSetupComplete();
+
+    // Update captain avatar display
+    updateSetupCaptainAvatar();
+
     showScreen('setupScreen');
+}
+
+function updateSetupCaptainAvatar() {
+    const player = getCurrentPlayer();
+    const avatarContainer = document.getElementById('setupCaptainAvatar');
+
+    if (player.captainImage) {
+        avatarContainer.innerHTML = `<img src="${player.captainImage}" alt="Captain" class="uploaded-avatar">`;
+    } else {
+        // Show default SVG
+        avatarContainer.innerHTML = `
+            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+            </svg>
+        `;
+    }
+}
+
+function handleCaptainUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file');
+        return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Image size should be less than 2MB');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const player = getCurrentPlayer();
+        player.captainImage = e.target.result;
+        updateSetupCaptainAvatar();
+    };
+    reader.readAsDataURL(file);
 }
 
 function resetPlayerData(player) {
@@ -489,8 +540,32 @@ function acknowledgePass() {
 function showBattleScreen() {
     document.getElementById('currentTurn').textContent = `Player ${gameState.currentPlayer}`;
     updateBattleStatus(`Player ${gameState.currentPlayer}, choose a cell to fire`);
+    updateBattleCaptainDisplay();
     renderBattleBoards();
     showScreen('battleScreen');
+}
+
+function updateBattleCaptainDisplay() {
+    const player = getCurrentPlayer();
+    const avatarContainer = document.getElementById('battleCaptainAvatar');
+    const captainNameEl = document.getElementById('battleCaptainName');
+
+    // Update captain name
+    captainNameEl.textContent = player.captainName;
+
+    // Update avatar
+    if (player.captainImage) {
+        avatarContainer.innerHTML = `<img src="${player.captainImage}" alt="Captain" class="uploaded-avatar">`;
+    } else {
+        // Show default SVG
+        avatarContainer.innerHTML = `
+            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+            </svg>
+        `;
+    }
 }
 
 function renderBattleBoards() {
@@ -659,6 +734,7 @@ function handleAttack(e) {
         gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
         document.getElementById('currentTurn').textContent = `Player ${gameState.currentPlayer}`;
         updateBattleStatus(`Player ${gameState.currentPlayer}, choose a cell to fire`);
+        updateBattleCaptainDisplay(); // Update captain avatar for new player
         renderBattleBoards(); // Re-render to update clickable cells
     }, 2500);
 }

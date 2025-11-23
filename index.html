@@ -60,6 +60,26 @@
             <h2 id="setupTitle">Setup - Player 1</h2>
             <p class="setup-instruction">Place your ships (no touching, even corners)</p>
 
+            <!-- Captain Avatar Section -->
+            <div class="captain-section">
+                <div class="captain-avatar-container">
+                    <div class="captain-avatar" id="setupCaptainAvatar">
+                        <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                            <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                        </svg>
+                    </div>
+                    <div class="captain-upload">
+                        <input type="file" id="captainImageInput" accept="image/*" onchange="handleCaptainUpload(event)" style="display: none;">
+                        <button class="btn btn-secondary btn-small" onclick="document.getElementById('captainImageInput').click()">
+                            Upload Captain Photo
+                        </button>
+                        <p class="captain-hint">(Optional)</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="ships-panel">
                 <h3>Ships left:</h3>
                 <div class="ships-container">
@@ -133,7 +153,19 @@
         <div class="container-wide">
             <div class="battle-header">
                 <h2>Battle Phase</h2>
-                <div class="turn-indicator">Turn: <span id="currentTurn">Player 1</span></div>
+                <div class="captain-display">
+                    <div class="captain-avatar captain-avatar-battle" id="battleCaptainAvatar">
+                        <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                            <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                        </svg>
+                    </div>
+                    <div class="turn-indicator">
+                        <div class="captain-name" id="battleCaptainName">Player 1</div>
+                        <div class="turn-label">Turn: <span id="currentTurn">Player 1</span></div>
+                    </div>
+                </div>
             </div>
 
             <div class="battle-boards">

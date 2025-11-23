@@ -201,6 +201,84 @@ h3 {
     color: #b0bec5;
 }
 
+/* ===== CAPTAIN AVATAR =====*/
+.captain-section {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.captain-avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.captain-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #4dd0e1;
+    background: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(77, 208, 225, 0.3);
+}
+
+.captain-avatar-battle {
+    width: 100px;
+    height: 100px;
+    border: 4px solid #4dd0e1;
+    box-shadow: 0 6px 20px rgba(77, 208, 225, 0.5);
+    animation: captainPulse 2s ease-in-out infinite;
+}
+
+@keyframes captainPulse {
+    0%, 100% {
+        box-shadow: 0 6px 20px rgba(77, 208, 225, 0.5);
+    }
+    50% {
+        box-shadow: 0 6px 30px rgba(77, 208, 225, 0.8);
+    }
+}
+
+.captain-avatar .default-avatar {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.captain-avatar .uploaded-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.captain-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.btn-small {
+    padding: 10px 20px;
+    font-size: 0.95em;
+}
+
+.captain-hint {
+    font-size: 0.85em;
+    color: #b0bec5;
+    font-style: italic;
+    margin: 0;
+}
+
 .ships-panel {
     background: rgba(0, 0, 0, 0.3);
     border: 2px solid #546e7a;
@@ -403,13 +481,32 @@ h3 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    padding: 15px;
+    padding: 20px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
 }
 
+.captain-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.captain-name {
+    font-size: 1.5em;
+    color: #ffd54f;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .turn-indicator {
-    font-size: 1.3em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.turn-label {
+    font-size: 1.1em;
     color: #4dd0e1;
     font-weight: bold;
 }
@@ -646,6 +743,34 @@ h3 {
     .container,
     .container-wide {
         padding: 20px;
+    }
+
+    .captain-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .captain-avatar-battle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .captain-name {
+        font-size: 1.2em;
+    }
+
+    .turn-label {
+        font-size: 1em;
+    }
+
+    .battle-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .captain-display {
+        flex-direction: column;
+        text-align: center;
     }
 
     .battle-boards {
