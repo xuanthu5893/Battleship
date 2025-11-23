@@ -455,6 +455,8 @@ function confirmSetup() {
         gameState.isHorizontal = true; // Reset orientation
         showPassScreen('Please hand the device to Player 2');
     } else {
+        // Player 2 setup complete, ready to start battle
+        gameState.setupPhase = 'battle'; // Mark setup as complete
         gameState.gameStartTime = Date.now();
         gameState.currentPlayer = 1; // Battle starts with player 1
         showPassScreen('Player 1 starts! Get ready...');
@@ -472,9 +474,12 @@ function showPassScreen(message) {
 }
 
 function acknowledgePass() {
+    // After Player 1 ready, Player 2 needs to setup
     if (gameState.setupPhase === 'player2') {
         showSetupScreen(2);
-    } else if (gameState.currentScreen === 'passDeviceScreen') {
+    }
+    // After Player 2 ready, or during battle turn changes
+    else if (gameState.currentScreen === 'passDeviceScreen') {
         showBattleScreen();
     }
 }
