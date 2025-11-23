@@ -358,7 +358,9 @@ function randomPlacement() {
         totalAttempts++;
     }
 
-    if (success && isSetupComplete()) {
+    if (success) {
+        // Reset ship counts to 0 since all ships are now placed
+        player.shipsRemaining = { 2: 0, 3: 0, 4: 0 };
         updateShipCounts();
         renderSetupBoard();
         document.getElementById('readyButton').disabled = false;
@@ -668,9 +670,13 @@ function updateBattleCaptainDisplay() {
     const player = getCurrentPlayer();
     const avatarContainer = document.getElementById('battleCaptainAvatar');
     const captainNameEl = document.getElementById('battleCaptainName');
+    const shipsDestroyedEl = document.getElementById('shipsDestroyed');
 
     // Update captain name
     captainNameEl.textContent = player.captainName;
+
+    // Update ships destroyed count
+    shipsDestroyedEl.textContent = player.shipsDestroyed;
 
     // Update avatar
     if (player.captainImage) {
@@ -689,10 +695,9 @@ function updateBattleCaptainDisplay() {
 
 function renderBattleBoards() {
     const currentPlayerData = getCurrentPlayer();
-    const player1 = gameState.player1;
-    const player2 = gameState.player2;
+    const opponentData = getOpponentPlayer();
 
-    // Render single battle board showing all attacks from both players
+    // Render single battle board showing ONLY current player's attacks on opponent's board
     const battleBoard = document.getElementById('battleBoard');
     battleBoard.innerHTML = '';
 
@@ -703,20 +708,20 @@ function renderBattleBoards() {
             cell.dataset.row = row;
             cell.dataset.col = col;
 
-            // Check if Player 1 attacked this cell
-            let attacked = false;
-            if (player1.attacks[row][col] !== 0) {
-                attacked = true;
-                if (player1.attacks[row][col] === 1) {
-                    cell.classList.add('miss');
-                    cell.textContent = 'o';
-                } else if (player1.attacks[row][col] === 2) {
-                    cell.classList.add('hit');
-                    cell.textContent = 'X';
-                }
+            // Show only the CURRENT player's attacks
+            const attackStatus = currentPlayerData.attacks[row][col];
 
-                // Check if this hit resulted in a sunk ship on player 2
-                const sunkShip = player2.ships.find(s =>
+            if (attackStatus === 1) {
+                // Miss
+                cell.classList.add('miss');
+                cell.textContent = 'o';
+            } else if (attackStatus === 2) {
+                // Hit
+                cell.classList.add('hit');
+                cell.textContent = 'X';
+
+                // Check if this hit is part of a sunk ship on opponent's board
+                const sunkShip = opponentData.ships.find(s =>
                     s.sunk && s.cells.some(([r, c]) => r === row && c === col)
                 );
                 if (sunkShip) {
@@ -726,30 +731,8 @@ function renderBattleBoards() {
                 }
             }
 
-            // Check if Player 2 attacked this cell
-            if (player2.attacks[row][col] !== 0) {
-                attacked = true;
-                if (player2.attacks[row][col] === 1) {
-                    cell.classList.add('miss');
-                    cell.textContent = 'o';
-                } else if (player2.attacks[row][col] === 2) {
-                    cell.classList.add('hit');
-                    cell.textContent = 'X';
-                }
-
-                // Check if this hit resulted in a sunk ship on player 1
-                const sunkShip = player1.ships.find(s =>
-                    s.sunk && s.cells.some(([r, c]) => r === row && c === col)
-                );
-                if (sunkShip) {
-                    cell.classList.remove('hit');
-                    cell.classList.add('sunk');
-                    cell.textContent = '#';
-                }
-            }
-
-            // Only clickable if not already attacked and it's current player's turn
-            if (!attacked && currentPlayerData === getCurrentPlayer()) {
+            // Only clickable if not already attacked by current player
+            if (attackStatus === 0) {
                 cell.addEventListener('click', handleAttack);
                 cell.style.cursor = 'pointer';
             } else {
