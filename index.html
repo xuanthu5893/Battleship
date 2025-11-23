@@ -164,7 +164,14 @@
                     <div class="turn-indicator">
                         <div class="captain-name" id="battleCaptainName">Player 1</div>
                         <div class="turn-label">Turn: <span id="currentTurn">Player 1</span></div>
-                        <div class="ships-destroyed-label">Ships Destroyed: <span id="shipsDestroyed">0</span> / 4</div>
+                        <div class="ships-destroyed-label">
+                            <div>Destroyed: <span id="totalShipsDestroyed">0 / 4</span></div>
+                            <div class="ship-breakdown">
+                                <span class="ship-type-stat">2-cell: <span id="ship2Destroyed">0/1</span></span>
+                                <span class="ship-type-stat">3-cell: <span id="ship3Destroyed">0/2</span></span>
+                                <span class="ship-type-stat">4-cell: <span id="ship4Destroyed">0/1</span></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -219,11 +226,38 @@
         </div>
     </div>
 
+    <!-- Turn Change Popup -->
+    <div id="turnPopup" class="turn-popup">
+        <div class="turn-popup-content">
+            <div class="turn-popup-avatar" id="turnPopupAvatar">
+                <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                    <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                    <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                </svg>
+            </div>
+            <div class="turn-popup-text">
+                <h2 id="turnPopupPlayerName">Player 1</h2>
+                <p id="turnPopupMessage">Your Turn!</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Endgame Screen -->
     <div id="endgameScreen" class="screen overlay">
         <div class="container">
-            <h1>GAME OVER</h1>
-            <h2 id="winnerText">Player 1 WINS!</h2>
+            <h1>VICTORY!</h1>
+
+            <div class="victory-captain-display">
+                <div class="victory-captain-avatar" id="victoryCaptainAvatar">
+                    <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                        <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                        <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                    </svg>
+                </div>
+                <h2 id="winnerText">Player 1 WINS!</h2>
+            </div>
 
             <div class="stats">
                 <h3>Stats:</h3>
@@ -236,8 +270,8 @@
             </div>
 
             <div class="menu-buttons">
-                <button class="btn btn-primary" onclick="rematch()">Rematch</button>
-                <button class="btn btn-secondary" onclick="goHome()">Home</button>
+                <button class="btn btn-primary btn-large" onclick="goHome()">Home</button>
+                <button class="btn btn-secondary" onclick="rematch()">Rematch</button>
             </div>
         </div>
     </div>

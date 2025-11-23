@@ -333,9 +333,55 @@ h3 {
 .ship-cell {
     width: 30px;
     height: 30px;
-    background: #26a69a;
-    border: 1px solid #1a7a6f;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+    border: 2px solid #1a252f;
     border-radius: 3px;
+    position: relative;
+    box-shadow:
+        inset 0 2px 3px rgba(255,255,255,0.2),
+        inset 0 -2px 3px rgba(0,0,0,0.6),
+        0 2px 5px rgba(0,0,0,0.4);
+}
+
+.ship-cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 70%;
+    background: linear-gradient(135deg, #7f8c8d 0%, #5d6d7e 30%, #34495e 100%);
+    border-radius: 2px;
+    border: 1px solid rgba(149, 165, 166, 0.3);
+}
+
+/* First ship cell (bow) */
+.ship-preview .ship-cell:first-child::before {
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 20% 100%, 0 50%);
+    background: linear-gradient(270deg, #7f8c8d 0%, #5d6d7e 40%, #34495e 100%);
+}
+
+.ship-preview.vertical .ship-cell:first-child::before {
+    clip-path: polygon(0 20%, 50% 0, 100% 20%, 100% 100%, 0 100%);
+    background: linear-gradient(0deg, #7f8c8d 0%, #5d6d7e 40%, #34495e 100%);
+}
+
+/* Middle cells get conning tower */
+.ship-preview .ship-cell:not(:first-child):not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    height: 60%;
+    background: linear-gradient(180deg, #95a5a6 0%, #7f8c8d 40%, #5d6d7e 100%);
+    border-radius: 2px;
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.5),
+        inset 0 1px 2px rgba(255,255,255,0.3);
+    border: 1px solid rgba(52, 73, 94, 0.5);
 }
 
 .ship-count {
@@ -422,10 +468,10 @@ h3 {
 
 /* Cell States */
 .cell.ship {
-    background: linear-gradient(135deg, #546e7a 0%, #37474f 100%);
-    border-color: #37474f;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+    border: 2px solid #1a252f;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .cell.ship::before {
@@ -434,56 +480,110 @@ h3 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    background: linear-gradient(to bottom, #78909c 0%, #546e7a 50%, #37474f 100%);
-    border-radius: 2px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    width: 90%;
+    height: 75%;
+    background: linear-gradient(135deg, #7f8c8d 0%, #5d6d7e 30%, #34495e 70%, #2c3e50 100%);
+    border-radius: 4px;
+    box-shadow:
+        inset 0 3px 6px rgba(255,255,255,0.2),
+        inset 0 -3px 6px rgba(0,0,0,0.6),
+        0 3px 8px rgba(0,0,0,0.4);
+    border: 1px solid rgba(149, 165, 166, 0.3);
 }
 
-/* Ship direction indicators */
-.cell.ship-head::after {
+/* Ship middle sections - add conning tower */
+.cell.ship-middle {
+    position: relative;
+}
+
+.cell.ship-middle::after {
     content: '';
     position: absolute;
-    width: 0;
-    height: 0;
-    z-index: 1;
-}
-
-.cell.ship-head-right::after {
-    right: 2px;
     top: 50%;
-    transform: translateY(-50%);
-    border-left: 8px solid #4dd0e1;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-}
-
-.cell.ship-head-left::after {
-    left: 2px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-right: 8px solid #4dd0e1;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-}
-
-.cell.ship-head-down::after {
-    bottom: 2px;
     left: 50%;
-    transform: translateX(-50%);
-    border-top: 8px solid #4dd0e1;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
+    transform: translate(-50%, -50%);
+    width: 35%;
+    height: 55%;
+    background: linear-gradient(180deg, #95a5a6 0%, #7f8c8d 30%, #5d6d7e 70%, #34495e 100%);
+    border-radius: 3px;
+    box-shadow:
+        0 2px 4px rgba(0,0,0,0.5),
+        inset 0 2px 3px rgba(255,255,255,0.3),
+        inset 0 -1px 2px rgba(0,0,0,0.3);
+    border: 1px solid rgba(52, 73, 94, 0.5);
 }
 
+/* Horizontal ships */
+.cell.ship-horizontal::after {
+    width: 20%;
+    height: 40%;
+}
+
+/* Vertical ships */
+.cell.ship-vertical::after {
+    width: 40%;
+    height: 20%;
+}
+
+/* Ship bow (front) styling */
+.cell.ship-head-right {
+    background: linear-gradient(90deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+}
+
+.cell.ship-head-right::before {
+    clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);
+    background: linear-gradient(90deg, #7f8c8d 0%, #5d6d7e 40%, #34495e 100%);
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.3),
+        inset 0 -2px 4px rgba(0,0,0,0.5);
+}
+
+.cell.ship-head-left {
+    background: linear-gradient(270deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+}
+
+.cell.ship-head-left::before {
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 20% 100%, 0 50%);
+    background: linear-gradient(270deg, #7f8c8d 0%, #5d6d7e 40%, #34495e 100%);
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.3),
+        inset 0 -2px 4px rgba(0,0,0,0.5);
+}
+
+.cell.ship-head-down {
+    background: linear-gradient(180deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+}
+
+.cell.ship-head-down::before {
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+    background: linear-gradient(180deg, #7f8c8d 0%, #5d6d7e 40%, #34495e 100%);
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.3),
+        inset 0 -2px 4px rgba(0,0,0,0.5);
+}
+
+.cell.ship-head-up {
+    background: linear-gradient(0deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+}
+
+.cell.ship-head-up::before {
+    clip-path: polygon(0 20%, 50% 0, 100% 20%, 100% 100%, 0 100%);
+    background: linear-gradient(0deg, #7f8c8d 0%, #5d6d7e 40%, #34495e 100%);
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.3),
+        inset 0 -2px 4px rgba(0,0,0,0.5);
+}
+
+/* Ship head window/bridge highlights */
+.cell.ship-head-right::after,
+.cell.ship-head-left::after,
+.cell.ship-head-down::after,
 .cell.ship-head-up::after {
-    top: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-bottom: 8px solid #4dd0e1;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
+    background: radial-gradient(circle at center, rgba(255, 213, 79, 0.4) 0%, rgba(77, 208, 225, 0.2) 50%, transparent 70%);
+    width: 40%;
+    height: 40%;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 213, 79, 0.3);
 }
 
 .cell.preview-valid {
@@ -614,8 +714,31 @@ h3 {
 }
 
 .ships-destroyed-label {
-    font-size: 1em;
+    font-size: 0.95em;
     color: #ff9800;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ship-breakdown {
+    display: flex;
+    gap: 12px;
+    font-size: 0.85em;
+    color: #4dd0e1;
+    flex-wrap: wrap;
+}
+
+.ship-type-stat {
+    background: rgba(77, 208, 225, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(77, 208, 225, 0.3);
+}
+
+.ship-type-stat span {
+    color: #ffd54f;
     font-weight: bold;
 }
 
@@ -719,7 +842,154 @@ h3 {
     font-size: 1.2em;
 }
 
+/* ===== TURN POPUP ===== */
+.turn-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, rgba(15, 32, 39, 0.98) 0%, rgba(32, 58, 67, 0.98) 100%);
+    border: 4px solid #4dd0e1;
+    border-radius: 20px;
+    padding: 40px 60px;
+    z-index: 3500;
+    text-align: center;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.8),
+        0 0 60px rgba(77, 208, 225, 0.4),
+        inset 0 2px 20px rgba(77, 208, 225, 0.1);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+}
+
+.turn-popup.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.turn-popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.turn-popup-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #4dd0e1;
+    background: #ffffff;
+    box-shadow:
+        0 6px 20px rgba(77, 208, 225, 0.6),
+        0 0 40px rgba(77, 208, 225, 0.4);
+    animation: turnAvatarPulse 2s ease-in-out infinite;
+}
+
+@keyframes turnAvatarPulse {
+    0%, 100% {
+        box-shadow:
+            0 6px 20px rgba(77, 208, 225, 0.6),
+            0 0 40px rgba(77, 208, 225, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow:
+            0 8px 30px rgba(77, 208, 225, 0.8),
+            0 0 60px rgba(77, 208, 225, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+.turn-popup-avatar .default-avatar,
+.turn-popup-avatar .uploaded-avatar {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.turn-popup-avatar .uploaded-avatar {
+    object-fit: cover;
+}
+
+.turn-popup-text h2 {
+    font-size: 2.5em;
+    margin: 0;
+    color: #ffd54f;
+    text-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(255, 213, 79, 0.5);
+    letter-spacing: 2px;
+}
+
+.turn-popup-text p {
+    font-size: 1.5em;
+    margin: 0;
+    color: #4dd0e1;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 /* ===== ENDGAME SCREEN ===== */
+.victory-captain-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    margin: 30px 0;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+    border: 3px solid #ffd54f;
+    border-radius: 20px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(255, 213, 79, 0.3),
+        inset 0 2px 20px rgba(255, 213, 79, 0.1);
+}
+
+.victory-captain-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 6px solid #ffd54f;
+    background: #ffffff;
+    box-shadow:
+        0 8px 30px rgba(255, 213, 79, 0.7),
+        0 0 60px rgba(255, 215, 0, 0.5),
+        inset 0 0 20px rgba(255, 193, 7, 0.2);
+    animation: victoryAvatarPulse 2s ease-in-out infinite;
+}
+
+@keyframes victoryAvatarPulse {
+    0%, 100% {
+        box-shadow:
+            0 8px 30px rgba(255, 213, 79, 0.7),
+            0 0 60px rgba(255, 215, 0, 0.5),
+            inset 0 0 20px rgba(255, 193, 7, 0.2);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow:
+            0 10px 40px rgba(255, 213, 79, 0.9),
+            0 0 80px rgba(255, 215, 0, 0.7),
+            inset 0 0 30px rgba(255, 193, 7, 0.3);
+        transform: scale(1.05);
+    }
+}
+
+.victory-captain-avatar .default-avatar,
+.victory-captain-avatar .uploaded-avatar {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.victory-captain-avatar .uploaded-avatar {
+    object-fit: cover;
+}
+
 .stats {
     background: rgba(0, 0, 0, 0.3);
     border: 2px solid #546e7a;
@@ -751,8 +1021,26 @@ h3 {
 
 #winnerText {
     color: #ffd54f;
-    text-shadow: 2px 2px 8px rgba(255, 213, 79, 0.5);
-    margin-bottom: 20px;
+    text-shadow:
+        2px 2px 8px rgba(255, 213, 79, 0.7),
+        0 0 30px rgba(255, 215, 0, 0.5);
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 3px;
+    animation: victoryTextGlow 2s ease-in-out infinite;
+}
+
+@keyframes victoryTextGlow {
+    0%, 100% {
+        text-shadow:
+            2px 2px 8px rgba(255, 213, 79, 0.7),
+            0 0 30px rgba(255, 215, 0, 0.5);
+    }
+    50% {
+        text-shadow:
+            2px 2px 12px rgba(255, 213, 79, 0.9),
+            0 0 50px rgba(255, 215, 0, 0.7);
+    }
 }
 
 /* ===== SETTINGS SCREEN ===== */
@@ -871,6 +1159,19 @@ h3 {
         font-size: 1em;
     }
 
+    .ships-destroyed-label {
+        font-size: 0.85em;
+    }
+
+    .ship-breakdown {
+        gap: 8px;
+        font-size: 0.75em;
+    }
+
+    .ship-type-stat {
+        padding: 2px 6px;
+    }
+
     .battle-header {
         flex-direction: column;
         gap: 15px;
@@ -931,6 +1232,38 @@ h3 {
 
     .toast-content h3 {
         font-size: 2em;
+    }
+
+    .turn-popup {
+        padding: 30px 40px;
+    }
+
+    .turn-popup-avatar {
+        width: 90px;
+        height: 90px;
+    }
+
+    .turn-popup-text h2 {
+        font-size: 2em;
+    }
+
+    .turn-popup-text p {
+        font-size: 1.2em;
+    }
+
+    .victory-captain-avatar {
+        width: 100px;
+        height: 100px;
+        border: 4px solid #ffd54f;
+    }
+
+    .victory-captain-display {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    #winnerText {
+        font-size: 1.8em;
     }
 }
 

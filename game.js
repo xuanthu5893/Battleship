@@ -107,6 +107,7 @@ let gameState = {
         misses: 0,
         attacks: Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)),
         shipsDestroyed: 0,
+        shipsDestroyedByType: { 2: 0, 3: 0, 4: 0 },  // Track by ship length
         captainImage: null, // Base64 image data
         captainName: 'Player 1'
     },
@@ -119,6 +120,7 @@ let gameState = {
         misses: 0,
         attacks: Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)),
         shipsDestroyed: 0,
+        shipsDestroyedByType: { 2: 0, 3: 0, 4: 0 },  // Track by ship length
         captainImage: null, // Base64 image data
         captainName: 'Player 2'
     },
@@ -268,6 +270,7 @@ function resetPlayerData(player) {
     player.misses = 0;
     player.attacks = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
     player.shipsDestroyed = 0;
+    player.shipsDestroyedByType = { 2: 0, 3: 0, 4: 0 };
 }
 
 function selectShip(length) {
@@ -400,10 +403,39 @@ function renderSetupBoard() {
             if (player.board[row][col] === 1) {
                 cell.classList.add('ship');
 
-                // Add ship head indicator
-                const shipHead = findShipHead(player, row, col);
-                if (shipHead) {
-                    cell.classList.add(`ship-head-${shipHead}`);
+                // Find ship details
+                const ship = player.ships.find(s =>
+                    s.cells.some(([r, c]) => r === row && c === col)
+                );
+
+                if (ship) {
+                    // Determine if ship is horizontal or vertical
+                    const isHorizontal = ship.cells.length > 1 &&
+                        ship.cells[0][0] === ship.cells[1][0];
+
+                    cell.classList.add(isHorizontal ? 'ship-horizontal' : 'ship-vertical');
+
+                    // Check if this is the head (first cell)
+                    const [headRow, headCol] = ship.cells[0];
+                    const isHead = headRow === row && headCol === col;
+
+                    if (isHead) {
+                        // Determine direction for head
+                        if (ship.cells.length > 1) {
+                            const [nextRow, nextCol] = ship.cells[1];
+                            if (nextRow > headRow) cell.classList.add('ship-head-down');
+                            else if (nextRow < headRow) cell.classList.add('ship-head-up');
+                            else if (nextCol > headCol) cell.classList.add('ship-head-right');
+                            else if (nextCol < headCol) cell.classList.add('ship-head-left');
+                        }
+                    } else {
+                        // Middle sections get conning tower
+                        const [tailRow, tailCol] = ship.cells[ship.cells.length - 1];
+                        const isTail = tailRow === row && tailCol === col;
+                        if (!isTail) {
+                            cell.classList.add('ship-middle');
+                        }
+                    }
                 }
             } else if (player.board[row][col] === -1) {
                 cell.classList.add('forbidden');
@@ -416,30 +448,6 @@ function renderSetupBoard() {
             board.appendChild(cell);
         }
     }
-}
-
-function findShipHead(player, row, col) {
-    // Find which ship this cell belongs to
-    const ship = player.ships.find(s =>
-        s.cells.some(([r, c]) => r === row && c === col)
-    );
-
-    if (!ship) return null;
-
-    // Check if this is the head (first cell) of the ship
-    const [headRow, headCol] = ship.cells[0];
-    if (headRow !== row || headCol !== col) return null;
-
-    // Determine direction based on second cell
-    if (ship.cells.length > 1) {
-        const [nextRow, nextCol] = ship.cells[1];
-        if (nextRow > headRow) return 'down';
-        if (nextRow < headRow) return 'up';
-        if (nextCol > headCol) return 'right';
-        if (nextCol < headCol) return 'left';
-    }
-
-    return null;
 }
 
 function handleSetupHover(e) {
@@ -664,19 +672,23 @@ function showBattleScreen() {
     updateBattleCaptainDisplay();
     renderBattleBoards();
     showScreen('battleScreen');
+
+    // Show turn popup for first player after a short delay
+    setTimeout(() => {
+        showTurnPopup(gameState.currentPlayer);
+    }, 500);
 }
 
 function updateBattleCaptainDisplay() {
     const player = getCurrentPlayer();
     const avatarContainer = document.getElementById('battleCaptainAvatar');
     const captainNameEl = document.getElementById('battleCaptainName');
-    const shipsDestroyedEl = document.getElementById('shipsDestroyed');
 
     // Update captain name
     captainNameEl.textContent = player.captainName;
 
-    // Update ships destroyed count
-    shipsDestroyedEl.textContent = player.shipsDestroyed;
+    // Update ships destroyed display
+    updateShipsDestroyedDisplay();
 
     // Update avatar
     if (player.captainImage) {
@@ -691,6 +703,18 @@ function updateBattleCaptainDisplay() {
             </svg>
         `;
     }
+}
+
+function updateShipsDestroyedDisplay() {
+    const player = getCurrentPlayer();
+
+    // Update total destroyed
+    document.getElementById('totalShipsDestroyed').textContent = `${player.shipsDestroyed} / 4`;
+
+    // Update by type
+    document.getElementById('ship2Destroyed').textContent = `${player.shipsDestroyedByType[2]}/1`;
+    document.getElementById('ship3Destroyed').textContent = `${player.shipsDestroyedByType[3]}/2`;
+    document.getElementById('ship4Destroyed').textContent = `${player.shipsDestroyedByType[4]}/1`;
 }
 
 function renderBattleBoards() {
@@ -786,6 +810,10 @@ function handleAttack(e) {
             if (hitShip.hits === hitShip.length) {
                 hitShip.sunk = true;
                 currentPlayerData.shipsDestroyed++;
+
+                // Track by ship type
+                currentPlayerData.shipsDestroyedByType[hitShip.length]++;
+
                 result = 'sunk';
 
                 // Play sunk sound
@@ -794,6 +822,9 @@ function handleAttack(e) {
                 const shipName = getShipName(hitShip.length);
                 toastMessage = `You destroyed opponent's ${shipName}!`;
                 showToast('HIT!', toastMessage);
+
+                // Update ship destruction display
+                updateShipsDestroyedDisplay();
 
                 // Check if all ships sunk (game over)
                 if (opponentData.ships.every(ship => ship.sunk)) {
@@ -846,6 +877,9 @@ function handleAttack(e) {
         updateBattleStatus(`Player ${gameState.currentPlayer}, choose a cell to fire`);
         updateBattleCaptainDisplay(); // Update captain avatar for new player
         renderBattleBoards(); // Re-render to update clickable cells
+
+        // Show turn popup with avatar
+        showTurnPopup(gameState.currentPlayer);
     }, 2500);
 }
 
@@ -870,6 +904,42 @@ function showToast(title, message) {
     }, 1500);
 }
 
+function showTurnPopup(playerNum) {
+    const popup = document.getElementById('turnPopup');
+    const playerName = document.getElementById('turnPopupPlayerName');
+    const message = document.getElementById('turnPopupMessage');
+    const avatarContainer = document.getElementById('turnPopupAvatar');
+
+    // Update text
+    playerName.textContent = `Player ${playerNum}`;
+    message.textContent = 'Your Turn!';
+
+    // Update avatar - copy from battle screen or setup
+    const playerData = playerNum === 1 ? gameState.player1 : gameState.player2;
+
+    // Check if player has custom avatar
+    if (playerData.avatarUrl) {
+        avatarContainer.innerHTML = `<img src="${playerData.avatarUrl}" alt="Player ${playerNum}" class="uploaded-avatar">`;
+    } else {
+        // Use default avatar
+        avatarContainer.innerHTML = `
+            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+            </svg>
+        `;
+    }
+
+    // Show popup with animation
+    popup.classList.add('show');
+
+    // Hide after 2 seconds
+    setTimeout(() => {
+        popup.classList.remove('show');
+    }, 2000);
+}
+
 function updateBattleStatus(message) {
     document.getElementById('battleStatus').textContent = message;
 }
@@ -878,7 +948,25 @@ function updateBattleStatus(message) {
 function endGame(winner) {
     const winnerData = winner === 1 ? gameState.player1 : gameState.player2;
 
+    // Update winner text
     document.getElementById('winnerText').textContent = `Player ${winner} WINS!`;
+
+    // Update winner's avatar
+    const avatarContainer = document.getElementById('victoryCaptainAvatar');
+    if (winnerData.captainImage) {
+        avatarContainer.innerHTML = `<img src="${winnerData.captainImage}" alt="Winner" class="uploaded-avatar">`;
+    } else {
+        // Show default SVG
+        avatarContainer.innerHTML = `
+            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+            </svg>
+        `;
+    }
+
+    // Update stats
     document.getElementById('statTurns').textContent = gameState.turnCount;
     document.getElementById('statHits').textContent = winnerData.hits;
     document.getElementById('statMisses').textContent = winnerData.misses;
