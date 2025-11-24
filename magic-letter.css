@@ -13,7 +13,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .screen {
@@ -22,12 +23,13 @@ body {
     min-height: 100vh;
     padding: 20px;
     animation: fadeIn 0.5s ease;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
 }
 
 .screen.active {
     display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .screen.overlay {
@@ -39,6 +41,8 @@ body {
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
     z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
 }
 
 @keyframes fadeIn {
@@ -626,6 +630,7 @@ h3 {
     align-items: center;
     justify-content: center;
     font-size: 2em;
+    line-height: 1;
     font-weight: bold;
     color: #2c3e50;
     user-select: none;
@@ -846,6 +851,23 @@ h3 {
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .dual-board-container {
+        gap: 18px;
+    }
+
+    .letter-board {
+        max-width: 320px;
+        padding: 16px;
+        gap: 8px;
+    }
+
+    .letter-cell {
+        font-size: 1.5em;
+        border-width: 3px;
+    }
+}
+
 @media (max-width: 768px) {
     h1.title {
         font-size: 2em;
@@ -998,6 +1020,11 @@ h3 {
 
 /* ===== LANDSCAPE MODE FOR MOBILE ===== */
 @media (max-height: 600px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
     .screen {
         min-height: auto;
         padding: 10px;

@@ -28,6 +28,7 @@ body {
     padding: 20px;
     justify-content: center;
     align-items: center;
+    overflow-y: auto;
 }
 
 .screen.active {
@@ -118,6 +119,50 @@ h3 {
     .subtitle {
         font-size: 1.2em;
         margin-bottom: 40px;
+    }
+}
+
+/* ===== LANDSCAPE SUPPORT ===== */
+@media (max-height: 600px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow-y: auto;
+        padding: 10px 0;
+    }
+
+    .screen {
+        align-items: flex-start;
+        min-height: auto;
+        padding: 15px;
+    }
+
+    .screen.overlay {
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .container,
+    .container-wide {
+        margin: 10px auto 30px;
+    }
+}
+
+/* ===== MOBILE SCROLL & LAYOUT ===== */
+@media (max-width: 767px) {
+    body {
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .screen {
+        align-items: flex-start;
+        padding: 15px;
+    }
+
+    .container,
+    .container-wide {
+        margin: 20px auto 40px;
     }
 }
 

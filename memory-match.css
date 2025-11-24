@@ -290,14 +290,14 @@ h3 {
 
 .timer-circle {
     position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 15px;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 10px;
 }
 
 .timer-circle-large {
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
 }
 
 .timer-svg {
@@ -327,14 +327,14 @@ h3 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 3em;
+    font-size: 1.8em;
     font-weight: bold;
     color: #ffd93d;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .timer-text-large {
-    font-size: 2.5em;
+    font-size: 1.6em;
 }
 
 .timer-label {
@@ -345,21 +345,40 @@ h3 {
 /* ===== SCORE BAR ===== */
 .score-bar {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    gap: 20px;
-    align-items: center;
-    margin-bottom: 25px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "p1 center p2";
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+}
+
+.p1-score {
+    grid-area: p1;
+}
+
+.p2-score {
+    grid-area: p2;
+}
+
+.center-info {
+    grid-area: center;
+    text-align: center;
+    padding: 5px 10px;
 }
 
 .player-score {
-    text-align: center;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    border: 2px solid rgba(255, 217, 61, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 217, 61, 0.25);
+    min-width: 0;
 }
 
 .player-score.active {
@@ -377,22 +396,53 @@ h3 {
     }
 }
 
+.player-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(255, 217, 61, 0.4);
+    margin: 0;
+    background: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.player-avatar img,
+.player-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.player-avatar img {
+    object-fit: cover;
+    display: block;
+}
+
+.player-avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
 .player-label {
-    font-size: 0.95em;
-    margin-bottom: 8px;
+    font-size: 0.85em;
+    margin: 0;
     color: #f093fb;
     font-weight: bold;
+    white-space: nowrap;
 }
 
 .score-value {
-    font-size: 2.5em;
+    font-size: 1.6em;
     font-weight: bold;
     color: #ffd93d;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.center-info {
-    text-align: center;
+    margin-left: auto;
 }
 
 .matched-count {
@@ -421,7 +471,7 @@ h3 {
 /* ===== TURN TIMER ===== */
 .turn-timer {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 18px;
 }
 
 .turn-timer.warning .timer-progress {
@@ -860,8 +910,11 @@ h3 {
     }
 
     .score-bar {
-        grid-template-columns: 1fr;
-        gap: 15px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+            "p1 p2"
+            "center center";
+        gap: 10px;
     }
 
     .player-score {
@@ -883,21 +936,21 @@ h3 {
     }
 
     .timer-circle {
-        width: 90px;
-        height: 90px;
+        width: 55px;
+        height: 55px;
     }
 
     .timer-circle-large {
-        width: 80px;
-        height: 80px;
+        width: 55px;
+        height: 55px;
     }
 
     .timer-text {
-        font-size: 2.5em;
+        font-size: 1.6em;
     }
 
     .timer-text-large {
-        font-size: 2em;
+        font-size: 1.4em;
     }
 
     .toast {
@@ -971,6 +1024,18 @@ h3 {
 
 /* ===== LANDSCAPE MOBILE ===== */
 @media (max-height: 600px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow-y: auto;
+    }
+
+    .screen {
+        align-items: flex-start;
+        min-height: auto;
+        padding: 15px;
+    }
+
     .container,
     .container-wide {
         padding: 15px;

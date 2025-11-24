@@ -147,20 +147,73 @@ let gameState = {
 
 // ===== PLAYER MANAGEMENT =====
 function loadPlayerData() {
-    const selectedPlayerIds = getSelectedPlayers();
+    const selectedPlayerIds = getSelectedPlayers() || [];
     const allPlayers = getPlayers();
 
-    if (selectedPlayerIds.length === 2) {
-        const p1 = allPlayers.find(p => p.id === selectedPlayerIds[0]);
-        const p2 = allPlayers.find(p => p.id === selectedPlayerIds[1]);
+    let p1 = null;
+    let p2 = null;
 
-        if (p1) {
-            gameState.players.p1 = { name: p1.name, avatar: p1.avatar };
+    if (selectedPlayerIds.length === 2) {
+        p1 = allPlayers.find(p => p.id === selectedPlayerIds[0]) || null;
+        p2 = allPlayers.find(p => p.id === selectedPlayerIds[1]) || null;
+    }
+
+    if (!p1 || !p2) {
+        const fallbackPlayers = allPlayers.slice(0, 2);
+        if (!p1 && fallbackPlayers[0]) {
+            p1 = fallbackPlayers[0];
         }
-        if (p2) {
-            gameState.players.p2 = { name: p2.name, avatar: p2.avatar };
+        if (!p2 && fallbackPlayers[1]) {
+            p2 = fallbackPlayers[1];
         }
     }
+
+    if (!p1) {
+        p1 = { name: 'Player 1', avatar: null };
+    }
+    if (!p2) {
+        p2 = { name: 'Player 2', avatar: null };
+    }
+
+    gameState.players.p1 = { name: p1.name, avatar: p1.avatar };
+    gameState.players.p2 = { name: p2.name, avatar: p2.avatar };
+
+    updatePlayerProfileUI();
+}
+
+function updatePlayerProfileUI() {
+    updateSinglePlayerDisplay('p1', 'p1Name', 'p1Avatar', 1);
+    updateSinglePlayerDisplay('p2', 'p2Name', 'p2Avatar', 2);
+}
+
+function updateSinglePlayerDisplay(playerKey, nameId, avatarId, defaultIndex) {
+    const player = gameState.players[playerKey];
+    const nameEl = document.getElementById(nameId);
+    if (nameEl && player) {
+        nameEl.textContent = player.name || `Player ${defaultIndex}`;
+    }
+
+    const avatarEl = document.getElementById(avatarId);
+    if (avatarEl && player) {
+        avatarEl.innerHTML = getPlayerAvatarMarkup(player, defaultIndex);
+    }
+}
+
+function getPlayerAvatarMarkup(player, fallbackIndex) {
+    if (player && player.avatar) {
+        return `<img src="${player.avatar}" alt="${player.name}">`;
+    }
+
+    if (typeof createDefaultAvatar === 'function') {
+        const defaultAvatar = createDefaultAvatar(fallbackIndex);
+        if (defaultAvatar) {
+            const altText = player && player.name ? player.name : `Player ${fallbackIndex}`;
+            return `<img src="${defaultAvatar}" alt="${altText}">`;
+        }
+    }
+
+    const initial = player && player.name ? player.name.charAt(0).toUpperCase() : '?';
+    return `<div class="player-avatar-placeholder">${initial}</div>`;
 }
 
 // NOTE: Smart Shop is a simultaneous game (both players play at the same time)
@@ -447,11 +500,8 @@ function renderGameplay() {
     document.getElementById('roundBadge').textContent = `Round ${gameState.roundIndex}/${TOTAL_ROUNDS}`;
     document.getElementById('levelBadge').textContent = `Level ${gameState.currentLevel}`;
 
-    // Update player labels with names
-    const p1Label = document.querySelector('.p1-info .player-label');
-    const p2Label = document.querySelector('.p2-info .player-label');
-    if (p1Label) p1Label.textContent = gameState.players.p1.name;
-    if (p2Label) p2Label.textContent = gameState.players.p2.name;
+    // Update player info + avatars
+    updatePlayerProfileUI();
 
     // Update shelf labels with names
     const shelfLabels = document.querySelectorAll('.shelf-label');
