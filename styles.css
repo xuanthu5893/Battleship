@@ -1609,3 +1609,303 @@ h3 {
         font-size: 0.9em;
     }
 }
+
+/* ===== PLAYER MANAGEMENT ===== */
+.btn-players {
+    margin: 20px 0;
+    padding: 12px 30px;
+    font-size: 1.1em;
+}
+
+.modal-large {
+    max-width: 700px;
+}
+
+.players-list {
+    margin: 30px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(77, 208, 225, 0.3);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.player-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #4dd0e1;
+}
+
+.player-item-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #4dd0e1;
+    flex-shrink: 0;
+}
+
+.player-item-avatar img,
+.player-item-avatar svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Generic player avatar styling */
+.player-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 2px solid #4dd0e1;
+}
+
+.player-avatar-small {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 2px solid #4dd0e1;
+}
+
+/* SVG avatars should also have proper sizing */
+svg.player-avatar,
+svg.player-avatar-small {
+    border: none;
+}
+
+svg.default-avatar {
+    border-radius: 50%;
+}
+
+.player-item-info {
+    flex: 1;
+}
+
+.player-item-name {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.player-item-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.9em;
+}
+
+.player-edit-form {
+    margin: 25px 0;
+}
+
+.player-avatar-edit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.player-avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #4dd0e1;
+    background: #ffffff;
+}
+
+.player-avatar-preview img,
+.player-avatar-preview svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.form-group {
+    margin: 20px 0;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #4dd0e1;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    border: 2px solid rgba(77, 208, 225, 0.5);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-family: inherit;
+}
+
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #4dd0e1;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+/* ===== PLAYER SELECTION ===== */
+.player-selection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.player-slot h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #ffd93d;
+}
+
+.selected-player-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 3px dashed rgba(77, 208, 225, 0.5);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 200px;
+    justify-content: center;
+}
+
+.selected-player-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #4dd0e1;
+    border-style: solid;
+}
+
+.selected-player-card.selected {
+    border-style: solid;
+    border-color: #4dd0e1;
+    background: rgba(77, 208, 225, 0.1);
+}
+
+.player-card-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #4dd0e1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.player-card-avatar img,
+.player-card-avatar svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.player-card-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+}
+
+.available-players {
+    margin: 25px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.available-players h4 {
+    margin-bottom: 15px;
+    color: #4dd0e1;
+}
+
+.available-player-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.available-player-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #4dd0e1;
+}
+
+.available-player-item.selected {
+    border-color: #66bb6a;
+    background: rgba(102, 187, 106, 0.2);
+}
+
+.available-player-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #4dd0e1;
+    flex-shrink: 0;
+}
+
+.available-player-avatar img,
+.available-player-avatar svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.available-player-name {
+    font-size: 1.1em;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .player-selection-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .modal-large {
+        max-width: 95%;
+    }
+}

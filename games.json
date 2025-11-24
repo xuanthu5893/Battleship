@@ -31,6 +31,16 @@
       "version": "1.0.0"
     },
     {
+      "id": "magic-letter",
+      "name": "Magic Letter Hunt",
+      "description": "Vietnamese letter learning game - find letters, words & bigrams (3 levels)",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "✨",
+      "color": "#f093fb",
+      "version": "1.0.0"
+    },
+    {
       "id": "tictactoe",
       "name": "Tic Tac Toe",
       "description": "Classic X and O game (Coming Soon)",

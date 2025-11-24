@@ -13,6 +13,10 @@
             <h1 class="title">🎮 GAME HUB</h1>
             <p class="subtitle">Choose your game</p>
 
+            <button class="btn btn-secondary btn-players" onclick="showPlayerManagement()">
+                👥 Manage Players
+            </button>
+
             <div id="gamesGrid" class="games-grid">
                 <!-- Games will be loaded dynamically -->
             </div>
@@ -326,6 +330,91 @@
         </div>
     </div>
 
+    <!-- Player Management Modal -->
+    <div id="playerManagementModal" class="modal">
+        <div class="modal-content modal-large">
+            <h2>👥 MANAGE PLAYERS</h2>
+
+            <div class="players-list" id="playersList">
+                <!-- Players will be loaded here -->
+            </div>
+
+            <button class="btn btn-primary" onclick="addNewPlayer()">+ Add New Player</button>
+            <button class="btn btn-secondary" onclick="closePlayerManagement()">Close</button>
+        </div>
+    </div>
+
+    <!-- Player Edit Modal -->
+    <div id="playerEditModal" class="modal">
+        <div class="modal-content">
+            <h2 id="playerEditTitle">Edit Player</h2>
+
+            <div class="player-edit-form">
+                <div class="player-avatar-edit">
+                    <div class="player-avatar-preview" id="playerAvatarPreview">
+                        <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                            <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                        </svg>
+                    </div>
+                    <input type="file" id="playerAvatarInput" accept="image/*" style="display: none;">
+                    <button class="btn btn-secondary btn-small" onclick="document.getElementById('playerAvatarInput').click()">
+                        Upload Photo
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="playerNameInput">Player Name:</label>
+                    <input type="text" id="playerNameInput" maxlength="20" placeholder="Enter name">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="savePlayer()">Save</button>
+                <button class="btn btn-secondary" onclick="closePlayerEdit()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Selection Modal -->
+    <div id="playerSelectionModal" class="modal">
+        <div class="modal-content">
+            <h2>SELECT PLAYERS</h2>
+            <p class="subtitle">Choose 2 players for this game</p>
+
+            <div class="player-selection-grid">
+                <div class="player-slot">
+                    <h3>Player 1</h3>
+                    <div id="selectedPlayer1" class="selected-player-card" onclick="selectPlayerSlot(1)">
+                        <div class="player-card-avatar"></div>
+                        <div class="player-card-name">Click to select</div>
+                    </div>
+                </div>
+
+                <div class="player-slot">
+                    <h3>Player 2</h3>
+                    <div id="selectedPlayer2" class="selected-player-card" onclick="selectPlayerSlot(2)">
+                        <div class="player-card-avatar"></div>
+                        <div class="player-card-name">Click to select</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="available-players" id="availablePlayers">
+                <!-- Available players will be shown here -->
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="startGameBtn" onclick="confirmPlayerSelection()" disabled>
+                    Start Game
+                </button>
+                <button class="btn btn-secondary" onclick="closePlayerSelection()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="players.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

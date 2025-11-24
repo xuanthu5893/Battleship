@@ -59,6 +59,15 @@ function renderGames() {
 }
 
 function selectGame(gameId) {
+    // Check if we should show player selection (skip if coming from player selection)
+    if (!window.skipPlayerSelection) {
+        showPlayerSelection(gameId);
+        return;
+    }
+
+    // Reset flag
+    window.skipPlayerSelection = false;
+
     switch(gameId) {
         case 'battleship':
             showScreen('mainMenu');
@@ -69,6 +78,9 @@ function selectGame(gameId) {
         case 'smart-shop':
             window.location.href = 'smart-shop.html';
             break;
+        case 'magic-letter':
+            window.location.href = 'magic-letter.html';
+            break;
         default:
             alert('This game is coming soon!');
     }
@@ -76,6 +88,318 @@ function selectGame(gameId) {
 
 function backToGameSelection() {
     showScreen('gameSelectionScreen');
+}
+
+// ===== PLAYER MANAGEMENT =====
+let editingPlayerId = null;
+let selectingForSlot = null;
+
+function showPlayerManagement() {
+    renderPlayersList();
+    showModal('playerManagementModal');
+}
+
+function closePlayerManagement() {
+    hideModal('playerManagementModal');
+}
+
+function renderPlayersList() {
+    const playersList = document.getElementById('playersList');
+    const players = getPlayers();
+
+    playersList.innerHTML = '';
+
+    players.forEach(player => {
+        const playerItem = document.createElement('div');
+        playerItem.className = 'player-item';
+
+        const avatarHtml = player.avatar
+            ? `<img src="${player.avatar}" alt="${player.name}" class="player-avatar">`
+            : createDefaultAvatar(player.name.charAt(0).toUpperCase());
+
+        playerItem.innerHTML = `
+            ${avatarHtml}
+            <div class="player-info">
+                <div class="player-item-name">${player.name}</div>
+            </div>
+            <div class="player-actions">
+                <button class="btn btn-secondary btn-small" onclick="editPlayer('${player.id}')">Edit</button>
+                <button class="btn btn-danger btn-small" onclick="confirmDeletePlayer('${player.id}')">Delete</button>
+            </div>
+        `;
+
+        playersList.appendChild(playerItem);
+    });
+}
+
+function addNewPlayer() {
+    editingPlayerId = null;
+    document.getElementById('playerEditTitle').textContent = 'Add New Player';
+    document.getElementById('playerNameInput').value = '';
+    document.getElementById('playerAvatarPreview').innerHTML = createDefaultAvatar('?');
+    showModal('playerEditModal');
+}
+
+function editPlayer(id) {
+    editingPlayerId = id;
+    const player = getPlayerById(id);
+
+    if (!player) return;
+
+    document.getElementById('playerEditTitle').textContent = 'Edit Player';
+    document.getElementById('playerNameInput').value = player.name;
+
+    const avatarPreview = document.getElementById('playerAvatarPreview');
+    if (player.avatar) {
+        avatarPreview.innerHTML = `<img src="${player.avatar}" alt="${player.name}" class="player-avatar">`;
+    } else {
+        avatarPreview.innerHTML = createDefaultAvatar(player.name.charAt(0).toUpperCase());
+    }
+
+    showModal('playerEditModal');
+}
+
+function confirmDeletePlayer(id) {
+    const player = getPlayerById(id);
+    if (!player) return;
+
+    if (confirm(`Are you sure you want to delete ${player.name}?`)) {
+        deletePlayer(id);
+        renderPlayersList();
+    }
+}
+
+function closePlayerEdit() {
+    hideModal('playerEditModal');
+    editingPlayerId = null;
+}
+
+function savePlayer() {
+    const name = document.getElementById('playerNameInput').value.trim();
+
+    if (!name) {
+        alert('Please enter a player name');
+        return;
+    }
+
+    const avatarPreview = document.getElementById('playerAvatarPreview');
+    const img = avatarPreview.querySelector('img');
+    const avatar = img ? img.src : null;
+
+    if (editingPlayerId) {
+        // Update existing player
+        updatePlayer(editingPlayerId, name, avatar);
+    } else {
+        // Add new player
+        addPlayer(name, avatar);
+    }
+
+    renderPlayersList();
+    closePlayerEdit();
+}
+
+// Handle avatar upload in player edit modal
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarInput = document.getElementById('playerAvatarInput');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Image size should be less than 2MB');
+                return;
+            }
+
+            imageToBase64(file, (base64) => {
+                const avatarPreview = document.getElementById('playerAvatarPreview');
+                avatarPreview.innerHTML = `<img src="${base64}" alt="Avatar" class="player-avatar">`;
+            });
+        });
+    }
+});
+
+// ===== PLAYER SELECTION =====
+function showPlayerSelection(gameId) {
+    selectingForSlot = null;
+    renderAvailablePlayers();
+
+    // Load previously selected players if any
+    const selectedPlayerIds = getSelectedPlayers();
+    const players = getPlayers();
+
+    if (selectedPlayerIds && selectedPlayerIds.length === 2) {
+        const p1 = players.find(p => p.id === selectedPlayerIds[0]);
+        const p2 = players.find(p => p.id === selectedPlayerIds[1]);
+
+        if (p1) updateSelectedPlayerSlot(1, p1);
+        if (p2) updateSelectedPlayerSlot(2, p2);
+    } else {
+        // Clear slots
+        updateSelectedPlayerSlot(1, null);
+        updateSelectedPlayerSlot(2, null);
+    }
+
+    // Store game ID for later
+    window.pendingGameId = gameId;
+
+    showModal('playerSelectionModal');
+}
+
+function selectPlayerSlot(slot) {
+    selectingForSlot = slot;
+
+    // Highlight selected slot
+    document.querySelectorAll('.selected-player-card').forEach(card => {
+        card.classList.remove('active-slot');
+    });
+    document.getElementById(`selectedPlayer${slot}`).classList.add('active-slot');
+}
+
+function selectAvailablePlayer(id) {
+    if (!selectingForSlot) {
+        alert('Please select a player slot first (Player 1 or Player 2)');
+        return;
+    }
+
+    const player = getPlayerById(id);
+    if (!player) return;
+
+    updateSelectedPlayerSlot(selectingForSlot, player);
+    selectingForSlot = null;
+
+    // Remove active slot highlight
+    document.querySelectorAll('.selected-player-card').forEach(card => {
+        card.classList.remove('active-slot');
+    });
+
+    // Check if both slots filled
+    validatePlayerSelection();
+}
+
+function updateSelectedPlayerSlot(slot, player) {
+    const slotElement = document.getElementById(`selectedPlayer${slot}`);
+
+    if (player) {
+        const avatarHtml = player.avatar
+            ? `<img src="${player.avatar}" alt="${player.name}" class="player-card-avatar">`
+            : createDefaultAvatar(player.name.charAt(0).toUpperCase());
+
+        slotElement.innerHTML = `
+            <div class="player-card-avatar">${avatarHtml}</div>
+            <div class="player-card-name">${player.name}</div>
+        `;
+        slotElement.dataset.playerId = player.id;
+    } else {
+        slotElement.innerHTML = `
+            <div class="player-card-avatar"></div>
+            <div class="player-card-name">Click to select</div>
+        `;
+        delete slotElement.dataset.playerId;
+    }
+}
+
+function renderAvailablePlayers() {
+    const availablePlayers = document.getElementById('availablePlayers');
+    const players = getPlayers();
+
+    availablePlayers.innerHTML = '<h4>Available Players:</h4>';
+
+    players.forEach(player => {
+        const playerItem = document.createElement('div');
+        playerItem.className = 'available-player-item';
+        playerItem.onclick = () => selectAvailablePlayer(player.id);
+
+        const avatarHtml = player.avatar
+            ? `<img src="${player.avatar}" alt="${player.name}" class="player-avatar-small">`
+            : createDefaultAvatar(player.name.charAt(0).toUpperCase());
+
+        playerItem.innerHTML = `
+            ${avatarHtml}
+            <span>${player.name}</span>
+        `;
+
+        availablePlayers.appendChild(playerItem);
+    });
+}
+
+function validatePlayerSelection() {
+    const p1 = document.getElementById('selectedPlayer1').dataset.playerId;
+    const p2 = document.getElementById('selectedPlayer2').dataset.playerId;
+
+    const startBtn = document.getElementById('startGameBtn');
+
+    if (p1 && p2 && p1 !== p2) {
+        startBtn.disabled = false;
+    } else {
+        startBtn.disabled = true;
+    }
+}
+
+function confirmPlayerSelection() {
+    const p1Id = document.getElementById('selectedPlayer1').dataset.playerId;
+    const p2Id = document.getElementById('selectedPlayer2').dataset.playerId;
+
+    if (!p1Id || !p2Id) {
+        alert('Please select both players');
+        return;
+    }
+
+    if (p1Id === p2Id) {
+        alert('Please select two different players');
+        return;
+    }
+
+    // Save selected players
+    saveSelectedPlayers([p1Id, p2Id]);
+
+    // Load player data into game state
+    const players = getPlayers();
+    const p1 = players.find(p => p.id === p1Id);
+    const p2 = players.find(p => p.id === p2Id);
+
+    if (p1 && p2) {
+        // Update game state with player info (for Battleship)
+        if (gameState) {
+            gameState.player1.captainName = p1.name;
+            gameState.player1.captainImage = p1.avatar;
+            gameState.player2.captainName = p2.name;
+            gameState.player2.captainImage = p2.avatar;
+        }
+    }
+
+    closePlayerSelection();
+
+    // Start the appropriate game - set flag to skip player selection
+    const gameId = window.pendingGameId;
+    window.skipPlayerSelection = true;
+
+    // For external games, pass player data via URL or localStorage
+    if (gameId === 'memory-match' || gameId === 'smart-shop' || gameId === 'magic-letter') {
+        // Player data is already in localStorage via selectedPlayers
+        window.location.href = getGameUrl(gameId);
+    } else {
+        selectGame(gameId);
+    }
+}
+
+function getGameUrl(gameId) {
+    switch(gameId) {
+        case 'memory-match': return 'memory-match.html';
+        case 'smart-shop': return 'smart-shop.html';
+        case 'magic-letter': return 'magic-letter.html';
+        default: return 'index.html';
+    }
+}
+
+function closePlayerSelection() {
+    hideModal('playerSelectionModal');
+    selectingForSlot = null;
 }
 
 // ===== GAME STATE =====
@@ -287,7 +611,9 @@ function toggleSound() {
 
 // ===== SETUP PHASE =====
 function showSetupScreen(playerNum) {
-    document.getElementById('setupTitle').textContent = `Setup - Player ${playerNum}`;
+    const player = getCurrentPlayer();
+    const playerName = player.captainName || `Player ${playerNum}`;
+    document.getElementById('setupTitle').textContent = `Setup - ${playerName}`;
     updateShipCounts();
     renderSetupBoard();
     updateSetupStatus('Select a ship, hover board to preview');
@@ -713,7 +1039,8 @@ function confirmSetup() {
         gameState.currentPlayer = 2; // Switch to player 2 for setup
         gameState.selectedShip = null; // Reset selection for player 2
         gameState.isHorizontal = true; // Reset orientation
-        showPassScreen('Please hand the device to Player 2');
+        const player2Name = gameState.player2.captainName || 'Player 2';
+        showPassScreen(`Please hand the device to ${player2Name}`);
     } else {
         // Player 2 setup complete, ready to start battle
         // NO pass screen needed - both players face the screen together
@@ -747,8 +1074,10 @@ function acknowledgePass() {
 
 // ===== BATTLE PHASE =====
 function showBattleScreen() {
-    document.getElementById('currentTurn').textContent = `Player ${gameState.currentPlayer}`;
-    updateBattleStatus(`Player ${gameState.currentPlayer}, choose a cell to fire`);
+    const player = getCurrentPlayer();
+    const playerName = player.captainName || `Player ${gameState.currentPlayer}`;
+    document.getElementById('currentTurn').textContent = playerName;
+    updateBattleStatus(`${playerName}, choose a cell to fire`);
     updateBattleCaptainDisplay();
     renderBattleBoards();
     showScreen('battleScreen');
@@ -953,8 +1282,10 @@ function handleAttack(e) {
     // Switch turn after delay (NO pass screen - both players watch together)
     setTimeout(() => {
         gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
-        document.getElementById('currentTurn').textContent = `Player ${gameState.currentPlayer}`;
-        updateBattleStatus(`Player ${gameState.currentPlayer}, choose a cell to fire`);
+        const player = getCurrentPlayer();
+        const playerName = player.captainName || `Player ${gameState.currentPlayer}`;
+        document.getElementById('currentTurn').textContent = playerName;
+        updateBattleStatus(`${playerName}, choose a cell to fire`);
         updateBattleCaptainDisplay(); // Update captain avatar for new player
         renderBattleBoards(); // Re-render to update clickable cells
 
@@ -990,16 +1321,16 @@ function showTurnPopup(playerNum) {
     const message = document.getElementById('turnPopupMessage');
     const avatarContainer = document.getElementById('turnPopupAvatar');
 
-    // Update text
-    playerName.textContent = `Player ${playerNum}`;
-    message.textContent = 'Your Turn!';
-
-    // Update avatar - copy from battle screen or setup
+    // Get player data
     const playerData = playerNum === 1 ? gameState.player1 : gameState.player2;
 
-    // Check if player has custom avatar
-    if (playerData.avatarUrl) {
-        avatarContainer.innerHTML = `<img src="${playerData.avatarUrl}" alt="Player ${playerNum}" class="uploaded-avatar">`;
+    // Update text with player name
+    playerName.textContent = playerData.captainName || `Player ${playerNum}`;
+    message.textContent = 'Your Turn!';
+
+    // Update avatar
+    if (playerData.captainImage) {
+        avatarContainer.innerHTML = `<img src="${playerData.captainImage}" alt="${playerData.captainName}" class="uploaded-avatar">`;
     } else {
         // Use default avatar
         avatarContainer.innerHTML = `
@@ -1027,9 +1358,10 @@ function updateBattleStatus(message) {
 // ===== ENDGAME =====
 function endGame(winner) {
     const winnerData = winner === 1 ? gameState.player1 : gameState.player2;
+    const winnerName = winnerData.captainName || `Player ${winner}`;
 
     // Update winner text
-    document.getElementById('winnerText').textContent = `Player ${winner} WINS!`;
+    document.getElementById('winnerText').textContent = `${winnerName} WINS!`;
 
     // Update winner's avatar
     const avatarContainer = document.getElementById('victoryCaptainAvatar');

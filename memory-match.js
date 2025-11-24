@@ -174,8 +174,65 @@ let gameState = {
     settings: {
         backgroundMusic: true,
         soundEffects: true
+    },
+    players: {
+        p1: { name: 'Player 1', avatar: null },
+        p2: { name: 'Player 2', avatar: null }
     }
 };
+
+// ===== PLAYER MANAGEMENT =====
+function loadPlayerData() {
+    const selectedPlayerIds = getSelectedPlayers();
+    const allPlayers = getPlayers();
+
+    if (selectedPlayerIds.length === 2) {
+        const p1 = allPlayers.find(p => p.id === selectedPlayerIds[0]);
+        const p2 = allPlayers.find(p => p.id === selectedPlayerIds[1]);
+
+        if (p1) {
+            gameState.players.p1 = { name: p1.name, avatar: p1.avatar };
+        }
+        if (p2) {
+            gameState.players.p2 = { name: p2.name, avatar: p2.avatar };
+        }
+    }
+}
+
+function showTurnPopup(playerNum) {
+    const popup = document.getElementById('turnPopup');
+    const playerName = document.getElementById('turnPopupPlayerName');
+    const message = document.getElementById('turnPopupMessage');
+    const avatarContainer = document.getElementById('turnPopupAvatar');
+
+    const player = gameState.players[`p${playerNum}`];
+
+    // Update text with player name
+    playerName.textContent = player.name;
+    message.textContent = 'Your Turn!';
+
+    // Update avatar
+    if (player.avatar) {
+        avatarContainer.innerHTML = `<img src="${player.avatar}" alt="${player.name}" class="uploaded-avatar">`;
+    } else {
+        // Use default avatar
+        avatarContainer.innerHTML = `
+            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
+                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
+                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+            </svg>
+        `;
+    }
+
+    // Show popup with animation
+    popup.classList.add('show');
+
+    // Hide after 2 seconds
+    setTimeout(() => {
+        popup.classList.remove('show');
+    }, 2000);
+}
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(screenId) {
@@ -252,8 +309,9 @@ function startGame(difficulty = null) {
     gameState.boardRows = diffSettings.gridRows;
     gameState.totalPairs = diffSettings.pairs;
 
-    // Reset game state (preserve settings and difficulty)
+    // Reset game state (preserve settings, difficulty, and players)
     const settings = gameState.settings;
+    const players = gameState.players;
     gameState = {
         phase: 'preview',
         difficulty: gameState.difficulty,
@@ -272,7 +330,8 @@ function startGame(difficulty = null) {
         turnTimer: null,
         turnTimeRemaining: TURN_DURATION,
         isProcessing: false,
-        settings: settings
+        settings: settings,
+        players: players
     };
 
     // Start background music
@@ -375,6 +434,11 @@ function startBattlePhase() {
     renderBattleBoard();
     updateBattleUI();
     startTurnTimer();
+
+    // Show turn popup for first player
+    setTimeout(() => {
+        showTurnPopup(1);
+    }, 500);
 }
 
 function renderBattleBoard() {
@@ -412,15 +476,22 @@ function updateBattleUI() {
     document.getElementById('matchedCount').textContent = gameState.matchedCount;
     document.getElementById('totalPairs').textContent = gameState.totalPairs;
 
+    // Update player labels with names
+    const p1Label = document.querySelector('.p1-score .player-label');
+    const p2Label = document.querySelector('.p2-score .player-label');
+    if (p1Label) p1Label.textContent = gameState.players.p1.name;
+    if (p2Label) p2Label.textContent = gameState.players.p2.name;
+
     // Update turn indicator
-    document.getElementById('currentTurnText').textContent = `Player ${gameState.currentPlayer}`;
+    const currentPlayerName = gameState.players[`p${gameState.currentPlayer}`].name;
+    document.getElementById('currentTurnText').textContent = currentPlayerName;
 
     // Highlight current player
     document.querySelectorAll('.player-score').forEach(el => el.classList.remove('active'));
     document.querySelector(`.p${gameState.currentPlayer}-score`).classList.add('active');
 
     // Update status message
-    const msg = `Player ${gameState.currentPlayer}, flip 2 cards`;
+    const msg = `${currentPlayerName}, flip 2 cards`;
     document.getElementById('statusMessage').textContent = msg;
 }
 
@@ -545,6 +616,9 @@ function switchTurn() {
     gameState.totalTurns++;
     gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
     resetTurnTimer();
+
+    // Show turn popup
+    showTurnPopup(gameState.currentPlayer);
 }
 
 // ===== TURN TIMER =====
@@ -617,9 +691,10 @@ function showToast(type, player) {
     const message = document.getElementById('toastMessage');
 
     if (type === 'match') {
+        const playerName = gameState.players[`p${player}`].name;
         icon.textContent = '✨';
         title.textContent = 'MATCH!';
-        message.textContent = `+1 for Player ${player}`;
+        message.textContent = `+1 for ${playerName}`;
     } else {
         icon.textContent = '❌';
         title.textContent = 'NO MATCH';
@@ -637,7 +712,8 @@ function showTimeoutToast() {
     const message = document.getElementById('timeoutMessage');
 
     const nextPlayer = gameState.currentPlayer === 1 ? 2 : 1;
-    message.textContent = `Turn passes to Player ${nextPlayer}`;
+    const nextPlayerName = gameState.players[`p${nextPlayer}`].name;
+    message.textContent = `Turn passes to ${nextPlayerName}`;
 
     toast.classList.add('show');
     setTimeout(() => {
@@ -654,10 +730,10 @@ function endGame() {
     let winner = '';
     let winnerIcon = '';
     if (gameState.scores.p1 > gameState.scores.p2) {
-        winner = 'Player 1 WINS!';
+        winner = `${gameState.players.p1.name} WINS!`;
         winnerIcon = '🏆';
     } else if (gameState.scores.p2 > gameState.scores.p1) {
-        winner = 'Player 2 WINS!';
+        winner = `${gameState.players.p2.name} WINS!`;
         winnerIcon = '🏆';
     } else {
         winner = "IT'S A DRAW!";
@@ -667,6 +743,14 @@ function endGame() {
     // Update endgame screen
     document.getElementById('winnerIcon').textContent = winnerIcon;
     document.getElementById('winnerText').textContent = winner;
+
+    // Update player names in score rows
+    const scoreRows = document.querySelectorAll('#endgameScreen .score-row .player-name');
+    if (scoreRows.length >= 2) {
+        scoreRows[0].textContent = `${gameState.players.p1.name}:`;
+        scoreRows[1].textContent = `${gameState.players.p2.name}:`;
+    }
+
     document.getElementById('finalP1Score').textContent = `${gameState.scores.p1} pairs`;
     document.getElementById('finalP2Score').textContent = `${gameState.scores.p2} pairs`;
 
@@ -703,6 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
         circle.style.strokeDasharray = CIRCUMFERENCE;
         circle.style.strokeDashoffset = 0;
     });
+
+    // Load player data from localStorage
+    loadPlayerData();
 
     showScreen('homeScreen');
 });
