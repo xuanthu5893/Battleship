@@ -94,13 +94,91 @@ function getPlayerById(id) {
     return players.find(p => p.id === id);
 }
 
-// Convert image file to base64
+// Convert image file to base64 (handles HEIC via heic2any when available)
 function imageToBase64(file, callback) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        callback(e.target.result);
-    };
-    reader.readAsDataURL(file);
+    convertImageFile(file)
+        .then(callback)
+        .catch(err => {
+            console.error('Image conversion failed, using raw file', err);
+            const reader = new FileReader();
+            reader.onload = (e) => callback(e.target.result);
+            reader.readAsDataURL(file);
+        });
+}
+
+async function convertImageFile(file) {
+    const processedBlob = await convertHeicIfNeeded(file);
+    return await resizeAndEncode(processedBlob);
+}
+
+function convertHeicIfNeeded(file) {
+    const type = (file.type || '').toLowerCase();
+    const name = (file.name || '').toLowerCase();
+    const isHeic =
+        type.includes('heic') ||
+        type.includes('heif') ||
+        name.endsWith('.heic') ||
+        name.endsWith('.heif');
+
+    if (isHeic && typeof window.heic2any === 'function') {
+        return window.heic2any({
+            blob: file,
+            toType: 'image/jpeg',
+            quality: 0.9
+        })
+            .then((result) => {
+                if (Array.isArray(result)) {
+                    return result[0];
+                }
+                return result;
+            })
+            .catch((err) => {
+                console.warn('HEIC conversion failed, using original file', err);
+                return file;
+            });
+    }
+
+    return Promise.resolve(file);
+}
+
+function resizeAndEncode(blob) {
+    const MAX_SIZE = 600;
+    return new Promise((resolve, reject) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+            let { width, height } = img;
+            if (width > height && width > MAX_SIZE) {
+                height = Math.round((height * MAX_SIZE) / width);
+                width = MAX_SIZE;
+            } else if (height > MAX_SIZE) {
+                width = Math.round((width * MAX_SIZE) / height);
+                height = MAX_SIZE;
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            try {
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                resolve(dataUrl);
+            } catch (err) {
+                reject(err);
+            } finally {
+                URL.revokeObjectURL(objectUrl);
+            }
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        };
+        img.src = objectUrl;
+    });
 }
 
 // Create default avatar SVG

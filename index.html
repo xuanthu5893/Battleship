@@ -93,7 +93,7 @@
                         </svg>
                     </div>
                     <div class="captain-upload">
-                        <input type="file" id="captainImageInput" accept="image/*" onchange="handleCaptainUpload(event)" style="display: none;">
+                        <input type="file" id="captainImageInput" accept="image/*" capture="environment" onchange="handleCaptainUpload(event)" style="display: none;">
                         <button class="btn btn-secondary btn-small" onclick="document.getElementById('captainImageInput').click()">
                             Upload Captain Photo
                         </button>
@@ -361,7 +361,7 @@
                             <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
                         </svg>
                     </div>
-                    <input type="file" id="playerAvatarInput" accept="image/*" style="display: none;">
+                    <input type="file" id="playerAvatarInput" accept="image/*" capture="environment" style="display: none;">
                     <button class="btn btn-secondary btn-small" onclick="document.getElementById('playerAvatarInput').click()">
                         Upload Photo
                     </button>
@@ -417,6 +417,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     <script src="players.js"></script>
     <script src="game.js"></script>
 </body>

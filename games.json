@@ -41,6 +41,16 @@
       "version": "1.0.0"
     },
     {
+      "id": "sushi-poison",
+      "name": "Sushi Có Độc!",
+      "description": "Poison Sushi Duel - chọn 2 miếng tẩm độc rồi ăn lần lượt",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "🍣",
+      "color": "#ff9a9e",
+      "version": "1.0.0"
+    },
+    {
       "id": "tictactoe",
       "name": "Tic Tac Toe",
       "description": "Classic X and O game (Coming Soon)",

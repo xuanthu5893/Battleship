@@ -279,6 +279,38 @@ h3 {
     }
 }
 
+/* Mobile-friendly modal layout */
+@media (max-width: 600px), (max-height: 600px) {
+    .modal {
+        align-items: flex-start;
+        padding: 20px 10px;
+    }
+
+    .modal-content {
+        padding: 18px;
+        width: 100%;
+        max-height: 85vh;
+        border-width: 2px;
+    }
+
+    .modal-content h2,
+    .modal-content h3 {
+        font-size: 1.2em;
+        margin-bottom: 12px;
+    }
+
+    .instructions,
+    .modal-content p {
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+
+    .modal .modal-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
 .instructions {
     text-align: left;
     margin: 20px 0;
@@ -572,6 +604,11 @@ h3 {
     border: 2px solid #1a252f;
     position: relative;
     overflow: visible;
+}
+
+.cell.drag-source {
+    opacity: 0.4;
+    outline: 2px dashed #ffd54f;
 }
 
 .cell.ship::before {
@@ -2103,5 +2140,51 @@ svg.default-avatar {
     .turn-popup-avatar {
         width: 100px;
         height: 100px;
+    }
+
+    /* Player selection modal tweaks */
+    .player-selection-grid {
+        gap: 15px;
+        margin: 15px 0;
+    }
+
+    .player-slot h3 {
+        font-size: 1em;
+        margin-bottom: 8px;
+    }
+
+    .selected-player-card {
+        padding: 15px;
+        min-height: auto;
+        gap: 10px;
+    }
+
+    .player-card-avatar {
+        width: 65px;
+        height: 65px;
+        border-width: 2px;
+    }
+
+    .player-card-name {
+        font-size: 1em;
+    }
+
+    .available-players {
+        max-height: 180px;
+        padding: 10px;
+    }
+
+    .available-player-item {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .available-player-avatar {
+        width: 42px;
+        height: 42px;
+    }
+
+    .available-player-name {
+        font-size: 0.95em;
     }
 }

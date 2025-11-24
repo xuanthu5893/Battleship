@@ -82,6 +82,9 @@ function selectGame(gameId) {
     case "magic-letter":
       window.location.href = "magic-letter.html";
       break;
+    case "sushi-poison":
+      window.location.href = "sushi-poison.html";
+      break;
     default:
       alert("This game is coming soon!");
   }
@@ -407,6 +410,8 @@ function getGameUrl(gameId) {
       return "smart-shop.html";
     case "magic-letter":
       return "magic-letter.html";
+    case "sushi-poison":
+      return "sushi-poison.html";
     default:
       return "index.html";
   }
@@ -518,6 +523,7 @@ let gameState = {
   selectedShip: null,
   isHorizontal: true,
   isProcessingAttack: false,
+  draggingShip: null,
 
   player1: {
     board: Array(BOARD_SIZE)
@@ -588,6 +594,7 @@ function startGame() {
   gameState.isHorizontal = true;
   gameState.selectedShip = null;
   gameState.isProcessingAttack = false;
+  gameState.draggingShip = null;
   resetPlayerData(gameState.player1);
   resetPlayerData(gameState.player2);
   gameState.turnCount = 0;
@@ -687,13 +694,11 @@ function handleCaptainUpload(event) {
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
+  imageToBase64(file, (base64) => {
     const player = getCurrentPlayer();
-    player.captainImage = e.target.result;
+    player.captainImage = base64;
     updateSetupCaptainAvatar();
-  };
-  reader.readAsDataURL(file);
+  });
 }
 
 function resetPlayerData(player) {
@@ -709,6 +714,45 @@ function resetPlayerData(player) {
     .map(() => Array(BOARD_SIZE).fill(0));
   player.shipsDestroyed = 0;
   player.shipsDestroyedByType = { 2: 0, 3: 0, 4: 0 };
+}
+
+function createEmptyBoard() {
+  return Array(BOARD_SIZE)
+    .fill(null)
+    .map(() => Array(BOARD_SIZE).fill(0));
+}
+
+function buildBoardFromShips(ships) {
+  const board = createEmptyBoard();
+
+  ships.forEach((ship) => {
+    ship.cells.forEach(([r, c]) => {
+      board[r][c] = 1;
+    });
+  });
+
+  ships.forEach((ship) => {
+    ship.cells.forEach(([r, c]) => {
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = r + dr;
+          const nc = c + dc;
+          if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+            if (board[nr][nc] === 0) {
+              board[nr][nc] = -1;
+            }
+          }
+        }
+      }
+    });
+  });
+
+  return board;
+}
+
+function rebuildPlayerBoard(player) {
+  player.board = buildBoardFromShips(player.ships);
 }
 
 function selectShip(length) {
@@ -894,6 +938,8 @@ function renderSetupBoard() {
             }
           }
         }
+
+        cell.addEventListener("pointerdown", startShipDrag);
       } else if (player.board[row][col] === -1) {
         cell.classList.add("forbidden");
       }
@@ -908,7 +954,7 @@ function renderSetupBoard() {
 }
 
 function handleSetupHover(e) {
-  if (!gameState.selectedShip) return;
+  if (!gameState.selectedShip || gameState.draggingShip) return;
 
   const row = parseInt(e.target.dataset.row);
   const col = parseInt(e.target.dataset.col);
@@ -977,7 +1023,7 @@ function getForbiddenZone(shipCells) {
   return Array.from(forbidden).map((key) => key.split(",").map(Number));
 }
 
-function handleSetupHoverEnd(e) {
+function clearSetupPreviews() {
   document.querySelectorAll("#setupBoard .cell").forEach((cell) => {
     cell.classList.remove(
       "preview-valid",
@@ -987,7 +1033,12 @@ function handleSetupHoverEnd(e) {
   });
 }
 
+function handleSetupHoverEnd(e) {
+  clearSetupPreviews();
+}
+
 function handleSetupClick(e) {
+  if (gameState.draggingShip) return;
   if (!gameState.selectedShip) {
     updateSetupStatus("Please select a ship first!");
     return;
@@ -1032,14 +1083,209 @@ function handleSetupClick(e) {
   }
 }
 
-function canPlaceShip(player, row, col, length, horizontal) {
+function startShipDrag(e) {
+  if (
+    e.pointerType === "mouse" &&
+    typeof e.button === "number" &&
+    e.button !== 0
+  ) {
+    return;
+  }
+
+  if (gameState.draggingShip) return;
+  if (typeof e.preventDefault === "function") {
+    e.preventDefault();
+  }
+
+  const cell = e.target.closest(".cell");
+  if (!cell || !cell.classList.contains("ship")) return;
+
+  const player = getCurrentPlayer();
+  const row = parseInt(cell.dataset.row);
+  const col = parseInt(cell.dataset.col);
+
+  const ship = player.ships.find((s) =>
+    s.cells.some(([r, c]) => r === row && c === col)
+  );
+  if (!ship) return;
+
+  const offsetIndex = ship.cells.findIndex(([r, c]) => r === row && c === col);
+  const horizontal =
+    ship.cells.length <= 1
+      ? true
+      : ship.cells[0][0] === ship.cells[1][0];
+
+  const otherShips = player.ships.filter((s) => s !== ship);
+  const boardWithoutShip = buildBoardFromShips(otherShips);
+
+  const boardElement = document.getElementById("setupBoard");
+
+  gameState.draggingShip = {
+    ship,
+    length: ship.length,
+    horizontal,
+    offsetIndex,
+    boardWithoutShip,
+    pointerId: e.pointerId,
+    boardElement,
+    currentHead: null,
+    validPlacement: false,
+  };
+
+  markShipAsDragging(ship, true);
+  clearSetupPreviews();
+
+  if (boardElement && boardElement.setPointerCapture) {
+    try {
+      boardElement.setPointerCapture(e.pointerId);
+    } catch (err) {
+      // Ignore capture errors on unsupported browsers
+    }
+  }
+
+  if (boardElement) {
+    boardElement.addEventListener("pointermove", handleShipDragMove);
+    boardElement.addEventListener("pointerup", finishShipDrag);
+    boardElement.addEventListener("pointercancel", cancelShipDrag);
+  }
+
+  updateSetupStatus("Drag the ship to reposition it.");
+}
+
+function handleShipDragMove(e) {
+  const drag = gameState.draggingShip;
+  if (!drag || e.pointerId !== drag.pointerId) return;
+
+  const element = document
+    .elementFromPoint(e.clientX, e.clientY);
+  const cell = element
+    ? element.closest("#setupBoard .cell")
+    : null;
+
+  if (!cell) {
+    clearSetupPreviews();
+    drag.validPlacement = false;
+    drag.currentHead = null;
+    return;
+  }
+
+  const row = parseInt(cell.dataset.row);
+  const col = parseInt(cell.dataset.col);
+
+  const headRow = drag.horizontal ? row : row - drag.offsetIndex;
+  const headCol = drag.horizontal ? col - drag.offsetIndex : col;
+
+  const canPlace = canPlaceShip(
+    null,
+    headRow,
+    headCol,
+    drag.length,
+    drag.horizontal,
+    drag.boardWithoutShip
+  );
+
+  drag.validPlacement = canPlace;
+  drag.currentHead = { row: headRow, col: headCol };
+
+  const cells = getShipCells(headRow, headCol, drag.length, drag.horizontal);
+  clearSetupPreviews();
+
+  cells.forEach(([r, c]) => {
+    const targetCell = document.querySelector(
+      `#setupBoard .cell[data-row="${r}"][data-col="${c}"]`
+    );
+    if (targetCell) {
+      targetCell.classList.add(canPlace ? "preview-valid" : "preview-invalid");
+    }
+  });
+
+  if (canPlace) {
+    const forbiddenCells = getForbiddenZone(cells);
+    forbiddenCells.forEach(([r, c]) => {
+      const targetCell = document.querySelector(
+        `#setupBoard .cell[data-row="${r}"][data-col="${c}"]`
+      );
+      if (targetCell && !targetCell.classList.contains("preview-valid")) {
+        targetCell.classList.add("forbidden-preview");
+      }
+    });
+  }
+}
+
+function finishShipDrag(e) {
+  completeShipDrag(e, false);
+}
+
+function cancelShipDrag(e) {
+  completeShipDrag(e, true);
+}
+
+function completeShipDrag(e, cancelled) {
+  const drag = gameState.draggingShip;
+  if (!drag || e.pointerId !== drag.pointerId) return;
+
+  const boardElement = drag.boardElement;
+  if (boardElement) {
+    if (boardElement.releasePointerCapture) {
+      try {
+        boardElement.releasePointerCapture(e.pointerId);
+      } catch (err) {
+        // Ignore release errors
+      }
+    }
+    boardElement.removeEventListener("pointermove", handleShipDragMove);
+    boardElement.removeEventListener("pointerup", finishShipDrag);
+    boardElement.removeEventListener("pointercancel", cancelShipDrag);
+  }
+
+  clearSetupPreviews();
+  markShipAsDragging(drag.ship, false);
+
+  const player = getCurrentPlayer();
+
+  if (!cancelled && drag.validPlacement && drag.currentHead) {
+    const newCells = getShipCells(
+      drag.currentHead.row,
+      drag.currentHead.col,
+      drag.length,
+      drag.horizontal
+    );
+    drag.ship.cells = newCells.map(([r, c]) => [r, c]);
+    rebuildPlayerBoard(player);
+    renderSetupBoard();
+    document.getElementById("readyButton").disabled = !isSetupComplete();
+    updateSetupStatus("Ship repositioned!");
+  } else {
+    renderSetupBoard();
+    updateSetupStatus("Ship position unchanged.");
+  }
+
+  gameState.draggingShip = null;
+}
+
+function markShipAsDragging(ship, isDragging) {
+  if (!ship) return;
+  ship.cells.forEach(([r, c]) => {
+    const cell = document.querySelector(
+      `#setupBoard .cell[data-row="${r}"][data-col="${c}"]`
+    );
+    if (cell) {
+      cell.classList.toggle("drag-source", isDragging);
+    }
+  });
+}
+
+function canPlaceShip(player, row, col, length, horizontal, boardOverride = null) {
+  const boardToCheck = boardOverride || (player ? player.board : null);
+  if (!boardToCheck) return false;
+
   const cells = getShipCells(row, col, length, horizontal);
 
   for (let [r, c] of cells) {
     if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) {
       return false;
     }
-    if (player.board[r][c] !== 0) {
+    if (boardToCheck[r][c] !== 0) {
       return false;
     }
   }
@@ -1052,7 +1298,7 @@ function canPlaceShip(player, row, col, length, horizontal) {
         const nr = r + dr;
         const nc = c + dc;
         if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-          if (player.board[nr][nc] === 1) {
+          if (boardToCheck[nr][nc] === 1) {
             return false;
           }
         }

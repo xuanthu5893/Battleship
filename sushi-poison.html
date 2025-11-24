@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Có Độc! - Poison Sushi Duel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sushi-poison.css">
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <div class="container">
+            <h1 class="title">SUSHI CÓ ĐỘC!</h1>
+            <p class="subtitle">Poison Sushi Duel</p>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" onclick="startSushiGame()">Start Game</button>
+                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
+                <button class="btn btn-secondary" onclick="goBackToHub()">Back to Games</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Poison Setup Screen -->
+    <div id="setupScreen" class="screen">
+        <div class="container-wide">
+            <h2 id="setupTitle">Poison Setup</h2>
+            <p id="setupInstruction" class="subtitle"></p>
+            <div id="setupBoard" class="board"></div>
+            <div class="selection-info">
+                Selected: <span id="selectedCount">0</span> / 2
+            </div>
+            <div class="actions-row">
+                <button class="btn btn-secondary" onclick="resetPoisonSelection()">Reset</button>
+                <button class="btn btn-primary" id="readyButton" onclick="confirmPoisonSelection()" disabled>Ready</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pass Device Screen -->
+    <div id="passScreen" class="screen">
+        <div class="container">
+            <div class="pass-container">
+                <h2>PASS DEVICE</h2>
+                <p>Hãy đưa máy cho <span id="nextPlayerName">Player 2</span></p>
+                <button class="btn btn-primary" onclick="acknowledgePass()">I'm ready</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battle Screen -->
+    <div id="battleScreen" class="screen">
+        <div class="container-wide">
+            <h2>Battle Phase</h2>
+            <div class="turn-highlight">
+                <div class="player-badge" id="currentTurnBadge">
+                    <div class="badge-avatar">
+                        <img id="currentPlayerAvatar" alt="Current player avatar">
+                    </div>
+                    <div class="badge-text">
+                        <div class="badge-label">Lượt:</div>
+                        <div class="badge-name" id="currentTurnLabel">Player 1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="battle-boards">
+                <div class="board-wrapper">
+                    <h3 id="p1BoardLabel">Player 1 Board</h3>
+                    <div id="p1Board" class="board"></div>
+                </div>
+                <div class="board-wrapper">
+                    <h3 id="p2BoardLabel">Player 2 Board</h3>
+                    <div id="p2Board" class="board"></div>
+                </div>
+            </div>
+            <div id="battleStatus" class="status-bar"></div>
+            <div class="actions-row">
+                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
+                <button class="btn btn-secondary" onclick="returnToHomeFromBattle()">Quit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endgame Screen -->
+    <div id="endScreen" class="screen">
+        <div class="container">
+            <div class="endgame-card">
+                <h2 id="endTitle">GAME OVER</h2>
+                <p id="endSubtitle">Player 1 wins!</p>
+                <div class="player-badge end-badge hidden" id="endPlayerBadge">
+                    <div class="badge-avatar">
+                        <img id="endPlayerAvatar" alt="Winning player avatar">
+                    </div>
+                    <div class="badge-text">
+                        <div class="badge-label" id="endPlayerLabel">Winner</div>
+                        <div class="badge-name" id="endPlayerName">Player 1</div>
+                    </div>
+                </div>
+                <div class="actions-row">
+                    <button class="btn btn-primary" onclick="rematch()">Rematch</button>
+                    <button class="btn btn-secondary" onclick="goBackToHub()">Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="sushiToast" class="toast"></div>
+
+    <!-- How To Play Modal -->
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <h2>HOW TO PLAY</h2>
+            <ol>
+                <li>Mỗi người tẩm độc 2 miếng sushi của đối thủ. Dụ đối phương ăn trúng!</li>
+                <li>Player 1 chọn trước (2 miếng trên bàn Player 2) → Pass Device → Player 2 chọn.</li>
+                <li>Battle Phase: P1 ăn trước trên bàn của mình. Một lượt ăn 1 miếng.</li>
+                <li>Nếu ăn trúng độc → thua ngay. Nếu an toàn → lượt chuyển cho người kia.</li>
+                <li>Nếu cả 2 ăn hết 9 miếng mà không trúng độc → hòa.</li>
+            </ol>
+            <div class="actions-row" style="justify-content:center; margin-top:20px;">
+                <button class="btn btn-primary" onclick="closeHowToPlay()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    <script src="players.js"></script>
+    <script src="sushi-poison.js"></script>
+</body>
+</html>
