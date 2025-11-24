@@ -1,0 +1,44 @@
+{
+  "games": [
+    {
+      "id": "battleship",
+      "name": "Battleship 2P",
+      "description": "Classic naval warfare strategy game (Offline Pass-Play)",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "🚢",
+      "color": "#4dd0e1",
+      "version": "1.0.0"
+    },
+    {
+      "id": "tictactoe",
+      "name": "Tic Tac Toe",
+      "description": "Classic X and O game (Coming Soon)",
+      "players": "2 Players",
+      "status": "coming_soon",
+      "icon": "❌",
+      "color": "#ff6b6b",
+      "version": "0.0.0"
+    },
+    {
+      "id": "connect4",
+      "name": "Connect Four",
+      "description": "Connect 4 pieces in a row (Coming Soon)",
+      "players": "2 Players",
+      "status": "coming_soon",
+      "icon": "🔴",
+      "color": "#ffd93d",
+      "version": "0.0.0"
+    },
+    {
+      "id": "chess",
+      "name": "Chess",
+      "description": "Classic strategy board game (Coming Soon)",
+      "players": "2 Players",
+      "status": "coming_soon",
+      "icon": "♟️",
+      "color": "#a8dadc",
+      "version": "0.0.0"
+    }
+  ]
+}

@@ -1,3 +1,77 @@
+// ===== GAME SELECTION =====
+let gamesData = null;
+
+async function loadGames() {
+    try {
+        const response = await fetch('games.json');
+        gamesData = await response.json();
+        renderGames();
+    } catch (error) {
+        console.error('Error loading games:', error);
+        // Fallback to hardcoded games if JSON fails to load
+        gamesData = {
+            games: [
+                {
+                    id: 'battleship',
+                    name: 'Battleship 2P',
+                    description: 'Classic naval warfare strategy game (Offline Pass-Play)',
+                    players: '2 Players',
+                    status: 'available',
+                    icon: '🚢',
+                    color: '#4dd0e1',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        renderGames();
+    }
+}
+
+function renderGames() {
+    const gamesGrid = document.getElementById('gamesGrid');
+    if (!gamesGrid || !gamesData) return;
+
+    gamesGrid.innerHTML = '';
+
+    gamesData.games.forEach(game => {
+        const gameCard = document.createElement('div');
+        gameCard.className = `game-card ${game.status}`;
+        gameCard.dataset.gameId = game.id;
+
+        gameCard.innerHTML = `
+            <div class="game-status-badge ${game.status}">
+                ${game.status === 'available' ? 'Play Now' : 'Coming Soon'}
+            </div>
+            <div class="game-card-content">
+                <span class="game-icon">${game.icon}</span>
+                <div class="game-name">${game.name}</div>
+                <div class="game-description">${game.description}</div>
+                <div class="game-players">${game.players}</div>
+            </div>
+        `;
+
+        if (game.status === 'available') {
+            gameCard.addEventListener('click', () => selectGame(game.id));
+        }
+
+        gamesGrid.appendChild(gameCard);
+    });
+}
+
+function selectGame(gameId) {
+    switch(gameId) {
+        case 'battleship':
+            showScreen('mainMenu');
+            break;
+        default:
+            alert('This game is coming soon!');
+    }
+}
+
+function backToGameSelection() {
+    showScreen('gameSelectionScreen');
+}
+
 // ===== GAME STATE =====
 const BOARD_SIZE = 10;
 const SHIPS = [
@@ -184,7 +258,7 @@ function closeSettings() {
 }
 
 function goHome() {
-    showScreen('mainMenu');
+    showScreen('gameSelectionScreen');
 }
 
 // ===== SETTINGS =====
@@ -1023,5 +1097,6 @@ document.addEventListener('keydown', (e) => {
 
 // ===== INITIALIZE =====
 document.addEventListener('DOMContentLoaded', () => {
-    showScreen('mainMenu');
+    loadGames();
+    showScreen('gameSelectionScreen');
 });
