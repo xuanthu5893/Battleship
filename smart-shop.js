@@ -163,40 +163,8 @@ function loadPlayerData() {
     }
 }
 
-function showTurnPopup(playerNum) {
-    const popup = document.getElementById('turnPopup');
-    const playerName = document.getElementById('turnPopupPlayerName');
-    const message = document.getElementById('turnPopupMessage');
-    const avatarContainer = document.getElementById('turnPopupAvatar');
-
-    const player = gameState.players[`p${playerNum}`];
-
-    // Update text with player name
-    playerName.textContent = player.name;
-    message.textContent = 'Your Turn!';
-
-    // Update avatar
-    if (player.avatar) {
-        avatarContainer.innerHTML = `<img src="${player.avatar}" alt="${player.name}" class="uploaded-avatar">`;
-    } else {
-        // Use default avatar
-        avatarContainer.innerHTML = `
-            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
-            </svg>
-        `;
-    }
-
-    // Show popup with animation
-    popup.classList.add('show');
-
-    // Hide after 2 seconds
-    setTimeout(() => {
-        popup.classList.remove('show');
-    }, 2000);
-}
+// NOTE: Smart Shop is a simultaneous game (both players play at the same time)
+// No turn popup needed - removed showTurnPopup() function
 
 // ===== UTILITY FUNCTIONS =====
 function shuffleArray(array) {
