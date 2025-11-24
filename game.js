@@ -63,6 +63,12 @@ function selectGame(gameId) {
         case 'battleship':
             showScreen('mainMenu');
             break;
+        case 'memory-match':
+            window.location.href = 'memory-match.html';
+            break;
+        case 'smart-shop':
+            window.location.href = 'smart-shop.html';
+            break;
         default:
             alert('This game is coming soon!');
     }

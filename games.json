@@ -11,6 +11,26 @@
       "version": "1.0.0"
     },
     {
+      "id": "memory-match",
+      "name": "Memory Match Duel",
+      "description": "Turn-based memory matching game with animals (4×4, 5×4, or 6×6 grid)",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "🐾",
+      "color": "#ff9800",
+      "version": "1.0.0"
+    },
+    {
+      "id": "smart-shop",
+      "name": "Smart Shop Race",
+      "description": "Educational shopping race - count, colors & categories (3 levels)",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "🛒",
+      "color": "#9c27b0",
+      "version": "1.0.0"
+    },
+    {
       "id": "tictactoe",
       "name": "Tic Tac Toe",
       "description": "Classic X and O game (Coming Soon)",
