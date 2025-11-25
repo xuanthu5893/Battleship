@@ -639,6 +639,18 @@ h3 {
     overflow: visible;
 }
 
+.cell.ship-selected {
+    border-color: #ffd54f;
+    box-shadow:
+        0 0 12px rgba(255, 213, 79, 0.8),
+        inset 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+.cell.ship-selected-pivot {
+    outline: 2px solid #ffeb3b;
+    outline-offset: -4px;
+}
+
 .cell.drag-source {
     opacity: 0.4;
     outline: 2px dashed #ffd54f;

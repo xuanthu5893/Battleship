@@ -834,6 +834,7 @@ let gameState = {
   currentPlayer: 1,
   setupPhase: "player1",
   selectedShip: null,
+  selectedBoardShip: null,
   isHorizontal: true,
   isProcessingAttack: false,
   draggingShip: null,
@@ -911,6 +912,7 @@ function startGame() {
   gameState.setupPhase = "player1";
   gameState.isHorizontal = true;
   gameState.selectedShip = null;
+  clearSelectedBoardShip();
   gameState.isProcessingAttack = false;
   gameState.draggingShip = null;
   clearChildHint();
@@ -967,6 +969,7 @@ function toggleSound() {
 // ===== SETUP PHASE =====
 function showSetupScreen(playerNum) {
   const player = getCurrentPlayer();
+  clearSelectedBoardShip();
   const playerName = player.captainName || `Player ${playerNum}`;
   document.getElementById("setupTitle").textContent = `Setup - ${playerName}`;
   updateShipCounts();
@@ -1031,9 +1034,36 @@ function rebuildPlayerBoard(player) {
   player.board = buildBoardFromShips(player.ships);
 }
 
+function clearSelectedBoardShip(shouldRerender = false) {
+  if (!gameState.selectedBoardShip) return;
+  gameState.selectedBoardShip = null;
+  if (shouldRerender) {
+    renderSetupBoard();
+  }
+}
+
+function isShipHorizontal(ship) {
+  if (!ship || ship.cells.length <= 1) return true;
+  return ship.cells[0][0] === ship.cells[1][0];
+}
+
+function getShipAtCell(player, row, col) {
+  if (!player) return null;
+
+  const ship = player.ships.find((s) =>
+    s.cells.some(([r, c]) => r === row && c === col)
+  );
+
+  if (!ship) return null;
+
+  const offsetIndex = ship.cells.findIndex(([r, c]) => r === row && c === col);
+  return { ship, offsetIndex };
+}
+
 function selectShip(length) {
   const player = getCurrentPlayer();
   if (player.shipsRemaining[length] > 0) {
+    clearSelectedBoardShip(true);
     gameState.selectedShip = length;
     updateShipSelection();
     updateSetupStatus(
@@ -1074,6 +1104,11 @@ function updateShipCounts() {
 }
 
 function rotateShip() {
+  if (gameState.selectedBoardShip) {
+    tryRotateSelectedBoardShip();
+    return;
+  }
+
   gameState.isHorizontal = !gameState.isHorizontal;
   updateSetupStatus(
     `Ship rotated to ${gameState.isHorizontal ? "horizontal" : "vertical"}`
@@ -1156,6 +1191,7 @@ function resetBoard(player = null) {
   player.ships = [];
   player.shipsRemaining = { 2: 1, 3: 2, 4: 1 };
   gameState.selectedShip = null;
+  clearSelectedBoardShip();
   updateShipCounts();
   renderSetupBoard();
   document.getElementById("readyButton").disabled = true;
@@ -1184,34 +1220,36 @@ function renderSetupBoard() {
         );
 
         if (ship) {
-          // Determine if ship is horizontal or vertical
-          const isHorizontal =
-            ship.cells.length > 1 && ship.cells[0][0] === ship.cells[1][0];
-
-          cell.classList.add(
-            isHorizontal ? "ship-horizontal" : "ship-vertical"
+          const shipIsHorizontal = isShipHorizontal(ship);
+          const cellIndex = ship.cells.findIndex(
+            ([r, c]) => r === row && c === col
           );
 
-          // Check if this is the head (first cell)
-          const [headRow, headCol] = ship.cells[0];
-          const isHead = headRow === row && headCol === col;
+          cell.classList.add(
+            shipIsHorizontal ? "ship-horizontal" : "ship-vertical"
+          );
 
-          if (isHead) {
+          // Highlight selection if needed
+          if (gameState.selectedBoardShip?.ship === ship) {
+            cell.classList.add("ship-selected");
+            if (gameState.selectedBoardShip.offsetIndex === cellIndex) {
+              cell.classList.add("ship-selected-pivot");
+            }
+          }
+
+          if (cellIndex === 0) {
             // Determine direction for head
             if (ship.cells.length > 1) {
               const [nextRow, nextCol] = ship.cells[1];
+              const [headRow, headCol] = ship.cells[0];
               if (nextRow > headRow) cell.classList.add("ship-head-down");
               else if (nextRow < headRow) cell.classList.add("ship-head-up");
               else if (nextCol > headCol) cell.classList.add("ship-head-right");
               else if (nextCol < headCol) cell.classList.add("ship-head-left");
             }
-          } else {
+          } else if (cellIndex !== ship.cells.length - 1) {
             // Middle sections get conning tower
-            const [tailRow, tailCol] = ship.cells[ship.cells.length - 1];
-            const isTail = tailRow === row && tailCol === col;
-            if (!isTail) {
-              cell.classList.add("ship-middle");
-            }
+            cell.classList.add("ship-middle");
           }
         }
 
@@ -1315,48 +1353,92 @@ function handleSetupHoverEnd(e) {
 
 function handleSetupClick(e) {
   if (gameState.draggingShip) return;
-  if (!gameState.selectedShip) {
-    updateSetupStatus("Please select a ship first!");
-    return;
-  }
 
   const row = parseInt(e.target.dataset.row);
   const col = parseInt(e.target.dataset.col);
   const player = getCurrentPlayer();
 
-  if (
-    canPlaceShip(
-      player,
-      row,
-      col,
-      gameState.selectedShip,
-      gameState.isHorizontal
-    )
-  ) {
-    placeShip(player, row, col, gameState.selectedShip, gameState.isHorizontal);
-    player.shipsRemaining[gameState.selectedShip]--;
+  const shipInfo = getShipAtCell(player, row, col);
 
-    // Play ship placement sound
-    playSound("place");
+  if (shipInfo) {
+    gameState.selectedShip = null;
+    updateShipSelection();
+    const alreadySelected =
+      gameState.selectedBoardShip?.ship === shipInfo.ship &&
+      gameState.selectedBoardShip.offsetIndex === shipInfo.offsetIndex;
 
-    if (player.shipsRemaining[gameState.selectedShip] === 0) {
-      gameState.selectedShip = null;
-    }
-
-    updateShipCounts();
-    renderSetupBoard();
-    document.getElementById("readyButton").disabled = !isSetupComplete();
-
-    if (isSetupComplete()) {
-      updateSetupStatus("All ships placed! Click Ready to continue.");
+    if (alreadySelected) {
+      clearSelectedBoardShip(true);
+      updateSetupStatus("Ship deselected.");
     } else {
+      gameState.selectedBoardShip = {
+        ship: shipInfo.ship,
+        offsetIndex: shipInfo.offsetIndex,
+      };
+      renderSetupBoard();
       updateSetupStatus(
-        "Ship placed! Select another ship or continue placing."
+        "Ship selected! Tap Rotate or choose a new cell to move it."
       );
     }
-  } else {
-    updateSetupStatus("Cannot place ship here! Ships cannot touch each other.");
+
+    return;
   }
+
+  if (gameState.selectedShip) {
+    if (
+      canPlaceShip(
+        player,
+        row,
+        col,
+        gameState.selectedShip,
+        gameState.isHorizontal
+      )
+    ) {
+      placeShip(
+        player,
+        row,
+        col,
+        gameState.selectedShip,
+        gameState.isHorizontal
+      );
+      player.shipsRemaining[gameState.selectedShip]--;
+
+      // Play ship placement sound
+      playSound("place");
+
+      if (player.shipsRemaining[gameState.selectedShip] === 0) {
+        gameState.selectedShip = null;
+      }
+
+      updateShipCounts();
+      renderSetupBoard();
+      document.getElementById("readyButton").disabled = !isSetupComplete();
+
+      if (isSetupComplete()) {
+        updateSetupStatus("All ships placed! Click Ready to continue.");
+      } else {
+        updateSetupStatus(
+          "Ship placed! Select another ship or continue placing."
+        );
+      }
+    } else {
+      updateSetupStatus(
+        "Cannot place ship here! Ships cannot touch each other."
+      );
+    }
+    return;
+  }
+
+  if (gameState.selectedBoardShip) {
+    if (!tryMoveSelectedShipToCell(row, col)) {
+      updateSetupStatus(
+        "Cannot move ship there. Ships cannot overlap or touch."
+      );
+    }
+    return;
+  }
+
+  updateSetupStatus("Select a ship from the list or tap an existing ship.");
 }
 
 function startShipDrag(e) {
@@ -1628,6 +1710,82 @@ function getShipCells(row, col, length, horizontal) {
   return cells;
 }
 
+function tryMoveSelectedShipToCell(targetRow, targetCol) {
+  const selection = gameState.selectedBoardShip;
+  if (!selection) return false;
+
+  const player = getCurrentPlayer();
+  const { ship, offsetIndex } = selection;
+  if (!ship) return false;
+
+  const horizontal = isShipHorizontal(ship);
+  const headRow = horizontal ? targetRow : targetRow - offsetIndex;
+  const headCol = horizontal ? targetCol - offsetIndex : targetCol;
+
+  const otherShips = player.ships.filter((s) => s !== ship);
+  const boardWithoutShip = buildBoardFromShips(otherShips);
+
+  if (
+    canPlaceShip(
+      null,
+      headRow,
+      headCol,
+      ship.length,
+      horizontal,
+      boardWithoutShip
+    )
+  ) {
+    ship.cells = getShipCells(headRow, headCol, ship.length, horizontal);
+    rebuildPlayerBoard(player);
+    renderSetupBoard();
+    document.getElementById("readyButton").disabled = !isSetupComplete();
+    updateSetupStatus("Ship moved!");
+    return true;
+  }
+
+  return false;
+}
+
+function tryRotateSelectedBoardShip() {
+  const selection = gameState.selectedBoardShip;
+  if (!selection) return false;
+
+  const player = getCurrentPlayer();
+  const { ship, offsetIndex } = selection;
+  if (!ship) return false;
+
+  const targetHorizontal = !isShipHorizontal(ship);
+  const pivotCell = ship.cells[offsetIndex] || ship.cells[0];
+  const pivotRow = pivotCell[0];
+  const pivotCol = pivotCell[1];
+  const headRow = targetHorizontal ? pivotRow : pivotRow - offsetIndex;
+  const headCol = targetHorizontal ? pivotCol - offsetIndex : pivotCol;
+
+  const otherShips = player.ships.filter((s) => s !== ship);
+  const boardWithoutShip = buildBoardFromShips(otherShips);
+
+  if (
+    canPlaceShip(
+      null,
+      headRow,
+      headCol,
+      ship.length,
+      targetHorizontal,
+      boardWithoutShip
+    )
+  ) {
+    ship.cells = getShipCells(headRow, headCol, ship.length, targetHorizontal);
+    rebuildPlayerBoard(player);
+    renderSetupBoard();
+    document.getElementById("readyButton").disabled = !isSetupComplete();
+    updateSetupStatus("Ship rotated!");
+  } else {
+    updateSetupStatus("Cannot rotate ship here. Try moving it first.");
+  }
+
+  return true;
+}
+
 function isSetupComplete() {
   const player = getCurrentPlayer();
   return (
@@ -1645,6 +1803,7 @@ function confirmSetup() {
     gameState.currentPlayer = 2; // Switch to player 2 for setup
     gameState.selectedShip = null; // Reset selection for player 2
     gameState.isHorizontal = true; // Reset orientation
+    clearSelectedBoardShip();
     const player2Name = gameState.player2.captainName || "Player 2";
     showPassScreen(`Please hand the device to ${player2Name}`);
   } else {
@@ -1653,6 +1812,7 @@ function confirmSetup() {
     gameState.setupPhase = "battle"; // Mark setup as complete
     gameState.gameStartTime = Date.now();
     gameState.currentPlayer = 1; // Battle starts with player 1
+    clearSelectedBoardShip();
     showBattleScreen(); // Go directly to battle
   }
 }
