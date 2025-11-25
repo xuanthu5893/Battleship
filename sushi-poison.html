@@ -16,9 +16,9 @@
             <h1 class="title">SUSHI CÓ ĐỘC!</h1>
             <p class="subtitle">Poison Sushi Duel</p>
             <div class="menu-buttons">
-                <button class="btn btn-primary" onclick="startSushiGame()">Start Game</button>
-                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
-                <button class="btn btn-secondary" onclick="goBackToHub()">Back to Games</button>
+                <button class="btn btn-primary" onclick="startSushiGame()">Bắt đầu</button>
+                <button class="btn btn-secondary" onclick="showHowToPlay()">Hướng dẫn</button>
+                <button class="btn btn-secondary" onclick="goBackToHub()">Trở về</button>
             </div>
         </div>
     </div>
@@ -30,11 +30,11 @@
             <p id="setupInstruction" class="subtitle"></p>
             <div id="setupBoard" class="board"></div>
             <div class="selection-info">
-                Selected: <span id="selectedCount">0</span> / 2
+                Selected: <span id="selectedCount">0</span> / <span id="selectedLimit">2</span>
             </div>
             <div class="actions-row">
-                <button class="btn btn-secondary" onclick="resetPoisonSelection()">Reset</button>
-                <button class="btn btn-primary" id="readyButton" onclick="confirmPoisonSelection()" disabled>Ready</button>
+                <button class="btn btn-secondary" onclick="resetPoisonSelection()">Đặt lại</button>
+                <button class="btn btn-primary" id="readyButton" onclick="confirmPoisonSelection()" disabled>Xong</button>
             </div>
         </div>
     </div>
@@ -43,9 +43,9 @@
     <div id="passScreen" class="screen">
         <div class="container">
             <div class="pass-container">
-                <h2>PASS DEVICE</h2>
-                <p>Hãy đưa máy cho <span id="nextPlayerName">Player 2</span></p>
-                <button class="btn btn-primary" onclick="acknowledgePass()">I'm ready</button>
+                <h2>ĐỔI LƯỢT</h2>
+                <p>Đưa máy cho <span id="nextPlayerName">Player 2</span></p>
+                <button class="btn btn-primary" onclick="acknowledgePass()">Sẵn sàng</button>
             </div>
         </div>
     </div>
@@ -53,7 +53,6 @@
     <!-- Battle Screen -->
     <div id="battleScreen" class="screen">
         <div class="container-wide">
-            <h2>Battle Phase</h2>
             <div class="turn-highlight">
                 <div class="player-badge" id="currentTurnBadge">
                     <div class="badge-avatar">
@@ -77,8 +76,8 @@
             </div>
             <div id="battleStatus" class="status-bar"></div>
             <div class="actions-row">
-                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
-                <button class="btn btn-secondary" onclick="returnToHomeFromBattle()">Quit</button>
+                <button class="btn btn-secondary" onclick="showHowToPlay()">Hướng dẫn</button>
+                <button class="btn btn-secondary" onclick="returnToHomeFromBattle()">Thoát</button>
             </div>
         </div>
     </div>
@@ -99,8 +98,8 @@
                     </div>
                 </div>
                 <div class="actions-row">
-                    <button class="btn btn-primary" onclick="rematch()">Rematch</button>
-                    <button class="btn btn-secondary" onclick="goBackToHub()">Home</button>
+                    <button class="btn btn-primary" onclick="rematch()">Chơi lại</button>
+                    <button class="btn btn-secondary" onclick="goBackToHub()">Trang chủ</button>
                 </div>
             </div>
         </div>
@@ -112,17 +111,35 @@
     <!-- How To Play Modal -->
     <div id="howToPlayModal" class="modal">
         <div class="modal-content">
-            <h2>HOW TO PLAY</h2>
+            <h2>CÁCH CHƠI</h2>
             <ol>
                 <li>Mỗi người tẩm độc 2 miếng sushi của đối thủ. Dụ đối phương ăn trúng!</li>
-                <li>Player 1 chọn trước (2 miếng trên bàn Player 2) → Pass Device → Player 2 chọn.</li>
-                <li>Battle Phase: P1 ăn trước trên bàn của mình. Một lượt ăn 1 miếng.</li>
+                <li>Player 1 chọn trước (2 miếng trên bàn Player 2) → Đổi lượt → Player 2 chọn.</li>
+                <li>Giai đoạn chơi: P1 ăn trước trên bàn của mình. Một lượt ăn 1 miếng.</li>
                 <li>Nếu ăn trúng độc → thua ngay. Nếu an toàn → lượt chuyển cho người kia.</li>
                 <li>Nếu cả 2 ăn hết 9 miếng mà không trúng độc → hòa.</li>
             </ol>
-            <div class="actions-row" style="justify-content:center; margin-top:20px;">
-                <button class="btn btn-primary" onclick="closeHowToPlay()">Got it!</button>
+            <div class="actions-row" style="justify-content:center; margin-top:16px;">
+                <button class="btn btn-primary" onclick="closeHowToPlay()">Đã hiểu!</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Antidote Popup -->
+    <div id="antidoteModal" class="modal">
+        <div class="modal-content antidote-modal">
+            <div class="antidote-art">
+                <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="30" y="30" width="60" height="80" rx="20" fill="#ffd6ff" stroke="#ff7eb3" stroke-width="4"/>
+                    <rect x="20" y="20" width="80" height="20" rx="10" fill="#fff" stroke="#ff7eb3" stroke-width="4"/>
+                    <rect x="38" y="60" width="44" height="32" rx="6" fill="#ff9ac2" opacity="0.8"/>
+                    <circle cx="60" cy="42" r="6" fill="#ff7eb3"/>
+                    <circle cx="60" cy="88" r="8" fill="#fff" opacity="0.4"/>
+                </svg>
+            </div>
+            <h2>UỐNG THUỐC GIẢI</h2>
+            <p id="antidoteMessage">Bé đã kịp uống thuốc giải!</p>
+            <button class="btn btn-primary" onclick="continueAfterAntidote()">Tiếp tục</button>
         </div>
     </div>
 

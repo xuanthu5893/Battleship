@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xây Tháp Kẹo - Candy Tower Turn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="candy-tower.css">
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <div class="container">
+            <h1 class="title">XÂY THÁP KẸO</h1>
+            <p class="subtitle">Candy Tower Turn</p>
+            <div class="difficulty-picker">
+                <button class="diff-btn" data-difficulty="easy" onclick="setCandyDifficulty('easy')">Easy</button>
+                <button class="diff-btn active" data-difficulty="normal" onclick="setCandyDifficulty('normal')">Normal</button>
+                <button class="diff-btn" data-difficulty="hard" onclick="setCandyDifficulty('hard')">Hard</button>
+            </div>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" onclick="startCandyGame()">Bắt đầu</button>
+                <button class="btn btn-secondary" onclick="showCandyHowTo()">Hướng dẫn</button>
+                <button class="btn btn-secondary" onclick="goBackToHub()">Trở về</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <div class="container-wide">
+            <div class="game-header">
+                <div class="player-card">
+                    <div class="player-avatar" id="currentPlayerAvatarWrap">
+                        <img id="currentPlayerAvatar" alt="Player avatar">
+                    </div>
+                    <div class="player-info">
+                        <p class="player-label">Current Turn</p>
+                        <h2 id="currentPlayerName">Player 1</h2>
+                        <p class="timer">Timer: <span id="turnTimer">10.0s</span></p>
+                    </div>
+                </div>
+                <div class="header-meta">
+                    <div class="difficulty-badge" id="difficultyBadge">Normal</div>
+                    <div class="turn-indicator">Tầng hiện tại: <span id="towerHeight">3</span></div>
+                </div>
+            </div>
+
+            <div class="tower-section">
+                <div class="tower-stack" id="towerStack"></div>
+            </div>
+
+            <div class="tray-section">
+                <div class="tray-header">
+                    <h3>Khay kẹo</h3>
+                    <span>Chọn 1 viên để đặt</span>
+                </div>
+                <div class="tray-grid" id="candyTray"></div>
+                <div class="selected-candy" id="selectedCandyInfo">Chưa chọn kẹo</div>
+            </div>
+
+            <div class="status-bar" id="gameStatus">Chọn 1 viên kẹo rồi đặt lên tháp</div>
+
+            <div class="actions-row">
+                <button class="btn btn-secondary" onclick="showCandyHowTo()">Hướng dẫn</button>
+                <button class="btn btn-secondary" onclick="returnCandyHomeConfirm()">Thoát</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Screen -->
+    <div id="endScreen" class="screen">
+        <div class="container">
+            <div class="end-card">
+                <h2 id="endTitle">GAME OVER</h2>
+                <p id="endSubtitle">Player 1 wins!</p>
+                <div class="player-card end-player">
+                    <div class="player-avatar" id="endPlayerAvatarWrap">
+                        <img id="endPlayerAvatar" alt="Winner avatar">
+                    </div>
+                    <div class="player-info">
+                        <p class="player-label" id="endPlayerLabel">Winner</p>
+                        <h3 id="endPlayerName">Player 1</h3>
+                    </div>
+                </div>
+                <div class="actions-row">
+                    <button class="btn btn-primary" onclick="startCandyGame()">Chơi lại</button>
+                    <button class="btn btn-secondary" onclick="goBackToHub()">Trang chủ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How To Play Modal -->
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <h2>HOW TO PLAY</h2>
+            <ul>
+                <li>Chọn 1 viên kẹo từ khay (5 viên mới mỗi lượt).</li>
+                <li>Chạm vị trí trên đỉnh tháp (4 ô) để đặt kẹo.</li>
+                <li>Tháp rung theo độ cân bằng. Nếu đổ, người vừa đặt thua.</li>
+                <li>Mỗi lượt có 10 giây. Hết giờ sẽ tự chọn kẹo & vị trí.</li>
+            </ul>
+            <button class="btn btn-primary" onclick="closeCandyHowTo()">Đã hiểu!</button>
+        </div>
+    </div>
+
+    <div id="candyToast" class="toast"></div>
+
+    <script src="players.js"></script>
+    <script src="candy-tower.js"></script>
+</body>
+</html>

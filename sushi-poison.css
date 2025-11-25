@@ -13,7 +13,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 8px;
 }
 
 img {
@@ -37,35 +37,36 @@ button {
 .container,
 .container-wide {
     background: rgba(255, 255, 255, 0.92);
-    border-radius: 18px;
-    padding: 25px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    max-width: 600px;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    max-width: 480px;
     margin: 0 auto;
 }
 
 .container-wide {
-    max-width: 900px;
+    max-width: 700px;
 }
 
 h1.title {
-    font-size: 2.6em;
+    font-size: 1.8em;
     text-align: center;
     color: #f25f5c;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .subtitle {
     text-align: center;
     color: #7a7a7a;
-    margin-bottom: 25px;
+    margin-bottom: 12px;
+    font-size: 0.9em;
 }
 
 .btn {
     border: none;
-    border-radius: 12px;
-    padding: 14px 24px;
-    font-size: 1.1em;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 0.95em;
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -95,48 +96,48 @@ h1.title {
 .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 /* ===== BOARD ===== */
 .board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 20px auto;
-    width: min(320px, 90vw);
+    gap: 8px;
+    margin: 10px auto;
+    width: min(280px, 90vw);
 }
 
 .sushi-card {
     background: #fff6f0;
-    border-radius: 16px;
-    min-height: 90px;
+    border-radius: 12px;
+    min-height: 75px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 2.5em;
+    font-size: 2em;
     position: relative;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 3px solid transparent;
+    border: 2px solid transparent;
 }
 
 .sushi-card span.label {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     color: #f28482;
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 .sushi-card .sushi-photo {
-    width: 68px;
-    height: 68px;
+    width: 52px;
+    height: 52px;
     object-fit: cover;
-    border-radius: 14px;
+    border-radius: 10px;
     display: block;
-    margin: 0 auto 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin: 0 auto 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .sushi-card:not(.disabled):hover {
@@ -170,9 +171,9 @@ h1.title {
 
 .sushi-card .poison-marker {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    font-size: 1.1em;
+    top: 4px;
+    right: 4px;
+    font-size: 1em;
     display: none;
 }
 
@@ -188,20 +189,21 @@ h1.title {
 .selection-info {
     text-align: center;
     font-weight: bold;
-    margin: 10px 0;
+    margin: 8px 0;
+    font-size: 0.9em;
 }
 
 .actions-row {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .status-bar {
-    margin-top: 20px;
+    margin-top: 10px;
     text-align: center;
-    font-size: 1.1em;
+    font-size: 0.95em;
     font-weight: bold;
     color: #f25f5c;
 }
@@ -209,17 +211,17 @@ h1.title {
 .turn-highlight {
     display: flex;
     justify-content: center;
-    margin: 10px 0 20px;
+    margin: 8px 0 12px;
 }
 
 .player-badge {
     display: inline-flex;
     align-items: center;
-    gap: 14px;
-    padding: 10px 20px;
+    gap: 10px;
+    padding: 8px 16px;
     border-radius: 999px;
     background: #ffffff;
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
     border: 2px solid #ffd3e0;
     transition: transform 0.2s ease;
 }
@@ -241,17 +243,17 @@ h1.title {
 }
 
 .player-badge.end-badge {
-    margin: 15px auto 5px;
+    margin: 10px auto 5px;
     justify-content: center;
 }
 
 .badge-avatar {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid #ffffff;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+    border: 2px solid #ffffff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     background: linear-gradient(135deg, #ffe4ef, #ffd1dc);
     position: relative;
     flex-shrink: 0;
@@ -274,7 +276,7 @@ h1.title {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.9em;
+    font-size: 1.5em;
     font-weight: 700;
     color: #ffffff;
 }
@@ -282,18 +284,18 @@ h1.title {
 .badge-text {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .badge-label {
-    font-size: 0.8em;
+    font-size: 0.7em;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     color: #888888;
 }
 
 .badge-name {
-    font-size: 1.4em;
+    font-size: 1.1em;
     font-weight: 600;
 }
 
@@ -304,7 +306,7 @@ h1.title {
 .battle-boards {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 16px;
     justify-content: center;
 }
 
@@ -313,8 +315,9 @@ h1.title {
 }
 
 .board-wrapper h3 {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     color: #f25f5c;
+    font-size: 1em;
 }
 
 .warning {
@@ -323,28 +326,30 @@ h1.title {
 
 .pass-container {
     text-align: center;
-    padding: 30px;
+    padding: 20px;
 }
 
 .pass-container h2 {
     color: #f25f5c;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
 }
 
 .toast {
     position: fixed;
-    bottom: 30px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%) translateY(120%);
     background: #2d2d2d;
     color: #fff;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 999px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
     transition: transform 0.4s ease, opacity 0.4s ease;
     opacity: 0;
     pointer-events: none;
     z-index: 10;
+    font-size: 0.9em;
 }
 
 .toast.show {
@@ -361,7 +366,7 @@ h1.title {
     justify-content: center;
     align-items: center;
     z-index: 20;
-    padding: 20px;
+    padding: 12px;
 }
 
 .modal.active {
@@ -370,23 +375,48 @@ h1.title {
 
 .modal-content {
     background: #fff;
-    border-radius: 18px;
-    padding: 30px;
-    max-width: 520px;
+    border-radius: 14px;
+    padding: 20px;
+    max-width: 420px;
     width: 100%;
-    max-height: 80vh;
+    max-height: 85vh;
     overflow-y: auto;
+}
+
+.antidote-modal {
+    text-align: center;
+    background: linear-gradient(180deg, #fff5fa, #ffe2f1);
+}
+
+.antidote-modal p {
+    margin: 8px 0 16px;
+    color: #7a4069;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.antidote-art {
+    width: 100px;
+    margin: 0 auto 12px;
+}
+
+.antidote-art svg {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 .modal-content h2 {
     text-align: center;
     color: #f25f5c;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
+    font-size: 1.5em;
 }
 
 .modal-content ol {
     margin-left: 20px;
-    line-height: 1.6;
+    line-height: 1.5;
+    font-size: 0.9em;
 }
 
 /* ===== ENDGAME ===== */
@@ -396,12 +426,13 @@ h1.title {
 
 .endgame-card h2 {
     color: #f25f5c;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-size: 1.6em;
 }
 
 .endgame-card p {
-    margin-bottom: 20px;
-    font-size: 1.1em;
+    margin-bottom: 16px;
+    font-size: 1em;
 }
 
 /* ===== ANIMATIONS ===== */
@@ -425,24 +456,57 @@ h1.title {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 600px) {
     body {
-        padding: 10px;
+        padding: 6px;
     }
 
     .container,
     .container-wide {
-        padding: 18px;
+        padding: 12px;
+        border-radius: 10px;
     }
 
     .board {
-        gap: 10px;
+        gap: 6px;
+        width: min(260px, 92vw);
     }
 
     .sushi-card {
-        min-height: 80px;
-        font-size: 2em;
+        min-height: 68px;
+        font-size: 1.8em;
+    }
+
+    .sushi-card .sushi-photo {
+        width: 46px;
+        height: 46px;
+    }
+
+    .sushi-card span.label {
+        font-size: 0.65rem;
     }
 
     .actions-row {
         flex-direction: column;
+        gap: 6px;
+    }
+
+    h1.title {
+        font-size: 1.5em;
+    }
+
+    .badge-avatar {
+        width: 42px;
+        height: 42px;
+    }
+
+    .badge-name {
+        font-size: 1em;
+    }
+
+    .battle-boards {
+        gap: 12px;
+    }
+
+    .board-wrapper h3 {
+        font-size: 0.9em;
     }
 }

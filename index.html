@@ -13,10 +13,17 @@
     <!-- Game Selection Screen -->
     <div id="gameSelectionScreen" class="screen active">
         <div class="container-wide">
-            <h1 class="title">🎮 GAME HUB</h1>
-            <p class="subtitle">Choose your game</p>
+            <div class="language-switcher">
+                <span class="language-label" data-i18n-key="language_label">Language</span>
+                <div class="language-options">
+                    <button class="lang-btn" data-lang="vi">VI</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
+            </div>
+            <h1 class="title" data-i18n-key="hub_title">🎮 GAME HUB</h1>
+            <p class="subtitle" data-i18n-key="hub_subtitle">Choose your game</p>
 
-            <button class="btn btn-secondary btn-players" onclick="showPlayerManagement()">
+            <button class="btn btn-secondary btn-players" data-i18n-key="manage_players_btn" onclick="showPlayerManagement()">
                 👥 Manage Players
             </button>
 
@@ -24,7 +31,7 @@
                 <!-- Games will be loaded dynamically -->
             </div>
 
-            <p class="version">More games coming soon!</p>
+            <p class="version" data-i18n-key="hub_version_note">More games coming soon!</p>
         </div>
     </div>
 
@@ -35,10 +42,10 @@
             <p class="subtitle">(Offline Pass-Play)</p>
 
             <div class="menu-buttons">
-                <button class="btn btn-primary" onclick="startGame()">Start Game</button>
-                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
-                <button class="btn btn-secondary" onclick="showSettings()">Settings</button>
-                <button class="btn btn-secondary" onclick="backToGameSelection()">← Back to Games</button>
+                <button class="btn btn-primary" onclick="startGame()">Bắt đầu</button>
+                <button class="btn btn-secondary" onclick="showHowToPlay()">Hướng dẫn</button>
+                <button class="btn btn-secondary" onclick="showSettings()">Cài đặt</button>
+                <button class="btn btn-secondary" onclick="backToGameSelection()">← Trở về</button>
             </div>
 
             <p class="version">version 1.0.0</p>
@@ -72,7 +79,7 @@
                     <li><strong>Victory:</strong> Ai đánh chìm hết 4 tàu của đối thủ trước thì thắng</li>
                 </ol>
             </div>
-            <button class="btn btn-primary" onclick="closeHowToPlay()">Got it</button>
+            <button class="btn btn-primary" onclick="closeHowToPlay()">Đã hiểu</button>
         </div>
     </div>
 
@@ -133,9 +140,9 @@
             </div>
 
             <div class="controls">
-                <button class="btn btn-secondary" onclick="rotateShip()">Rotate</button>
-                <button class="btn btn-secondary" onclick="randomPlacement()">Random</button>
-                <button class="btn btn-secondary" onclick="resetBoard()">Reset</button>
+                <button class="btn btn-secondary" onclick="rotateShip()">Xoay</button>
+                <button class="btn btn-secondary" onclick="randomPlacement()">Ngẫu nhiên</button>
+                <button class="btn btn-secondary" onclick="resetBoard()">Đặt lại</button>
             </div>
 
             <div class="board-container">
@@ -157,7 +164,7 @@
                 <p id="setupStatus">Select a ship, hover board to preview</p>
             </div>
 
-            <button id="readyButton" class="btn btn-primary btn-large" onclick="confirmSetup()" disabled>Ready</button>
+            <button id="readyButton" class="btn btn-primary btn-large" onclick="confirmSetup()" disabled>Sẵn sàng</button>
         </div>
     </div>
 
@@ -166,7 +173,7 @@
         <div class="container">
             <h1>PASS DEVICE</h1>
             <p class="pass-message" id="passMessage">Please hand the device to Player 2</p>
-            <button class="btn btn-primary btn-large" onclick="acknowledgePass()">I'm ready</button>
+            <button class="btn btn-primary btn-large" onclick="acknowledgePass()">Sẵn sàng</button>
         </div>
     </div>
 
@@ -231,11 +238,11 @@
             </div>
 
             <div class="battle-controls">
-                <button class="btn btn-secondary" onclick="showHowToPlay()">How to Play</button>
+                <button class="btn btn-secondary" onclick="showHowToPlay()">Hướng dẫn</button>
                 <button class="btn btn-secondary" onclick="toggleSound()">
                     SFX: <span id="soundStatus">ON</span>
                 </button>
-                <button class="btn btn-secondary" onclick="quitGame()">Quit</button>
+                <button class="btn btn-secondary" onclick="quitGame()">Thoát</button>
             </div>
         </div>
     </div>
@@ -292,8 +299,8 @@
             </div>
 
             <div class="menu-buttons">
-                <button class="btn btn-primary btn-large" onclick="goHome()">Home</button>
-                <button class="btn btn-secondary" onclick="rematch()">Rematch</button>
+                <button class="btn btn-primary btn-large" onclick="goHome()">Trang chủ</button>
+                <button class="btn btn-secondary" onclick="rematch()">Chơi lại</button>
             </div>
         </div>
     </div>
@@ -329,7 +336,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-primary" onclick="closeSettings()">Back</button>
+            <button class="btn btn-primary" onclick="closeSettings()">Trở về</button>
         </div>
     </div>
 
@@ -370,6 +377,14 @@
                 <div class="form-group">
                     <label for="playerNameInput">Player Name:</label>
                     <input type="text" id="playerNameInput" maxlength="20" placeholder="Enter name">
+                </div>
+
+                <div class="form-group child-flag-group">
+                    <label class="child-toggle" for="playerChildInput">
+                        <input type="checkbox" id="playerChildInput">
+                        <span>Đây là bé (Kid support)</span>
+                    </label>
+                    <p class="child-flag-note">Chúng tôi sẽ bật gợi ý & giao diện nhẹ nhàng hơn cho bé trong các game phù hợp.</p>
                 </div>
             </div>
 

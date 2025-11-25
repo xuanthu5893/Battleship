@@ -2,27 +2,42 @@
 
 // Default players
 const DEFAULT_PLAYERS = [
-    { id: 'p1', name: 'Player 1', avatar: null },
-    { id: 'p2', name: 'Player 2', avatar: null }
+    { id: 'p1', name: 'Player 1', avatar: null, isChild: false },
+    { id: 'p2', name: 'Player 2', avatar: null, isChild: false }
 ];
+
+function normalizePlayers(players = []) {
+    const source = Array.isArray(players) ? players : DEFAULT_PLAYERS;
+    return source.map((player, index) => {
+        const hasAvatarProp = Object.prototype.hasOwnProperty.call(player, 'avatar');
+        let avatarValue = hasAvatarProp ? player.avatar : null;
+        if (avatarValue === undefined) avatarValue = null;
+        return {
+            id: player.id || `p${index + 1}`,
+            name: player.name || `Player ${index + 1}`,
+            avatar: avatarValue,
+            isChild: typeof player.isChild === 'boolean' ? player.isChild : false
+        };
+    });
+}
 
 // Get players from localStorage or use defaults
 function getPlayers() {
     const stored = localStorage.getItem('gamePlayers');
     if (stored) {
         try {
-            return JSON.parse(stored);
+            return normalizePlayers(JSON.parse(stored));
         } catch (e) {
             console.error('Error parsing players:', e);
-            return [...DEFAULT_PLAYERS];
+            return normalizePlayers(DEFAULT_PLAYERS);
         }
     }
-    return [...DEFAULT_PLAYERS];
+    return normalizePlayers(DEFAULT_PLAYERS);
 }
 
 // Save players to localStorage
 function savePlayers(players) {
-    localStorage.setItem('gamePlayers', JSON.stringify(players));
+    localStorage.setItem('gamePlayers', JSON.stringify(normalizePlayers(players)));
 }
 
 // Get selected players for current game
@@ -50,26 +65,30 @@ function clearSelectedPlayers() {
 }
 
 // Add new player
-function addPlayer(name, avatar = null) {
+function addPlayer(name, avatar = null, isChild = false) {
     const players = getPlayers();
     const newId = 'p' + Date.now();
     players.push({
         id: newId,
         name: name,
-        avatar: avatar
+        avatar: avatar,
+        isChild: !!isChild
     });
     savePlayers(players);
     return newId;
 }
 
 // Update player
-function updatePlayer(id, name, avatar) {
+function updatePlayer(id, name, avatar, isChild) {
     const players = getPlayers();
     const index = players.findIndex(p => p.id === id);
     if (index !== -1) {
         players[index].name = name;
         if (avatar !== undefined) {
             players[index].avatar = avatar;
+        }
+        if (typeof isChild === 'boolean') {
+            players[index].isChild = isChild;
         }
         savePlayers(players);
         return true;
@@ -184,7 +203,14 @@ function resizeAndEncode(blob) {
 // Create default avatar SVG
 function createDefaultAvatar(playerNumber) {
     const colors = ['#4dd0e1', '#ff6b6b', '#66bb6a', '#ffd93d', '#9c27b0'];
-    const color = colors[(playerNumber - 1) % colors.length];
+    let seed = playerNumber;
+    if (typeof seed === 'string' && seed.length > 0) {
+        seed = seed.toUpperCase().charCodeAt(0) - 64;
+    }
+    if (typeof seed !== 'number' || Number.isNaN(seed)) {
+        seed = 1;
+    }
+    const color = colors[(Math.abs(Math.floor(seed) - 1)) % colors.length];
 
     return `data:image/svg+xml,${encodeURIComponent(`
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

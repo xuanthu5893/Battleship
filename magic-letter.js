@@ -56,14 +56,14 @@ let gameState = {
     levelsPlayed: [],
     progress: { p1: [], p2: [] }, // For Level 3 tracking
     players: {
-        p1: { name: 'Player 1', avatar: null },
-        p2: { name: 'Player 2', avatar: null }
+        p1: { name: 'Player 1', avatar: null, isChild: false },
+        p2: { name: 'Player 2', avatar: null, isChild: false }
     }
 };
 
 // ===== PLAYER MANAGEMENT =====
 function loadPlayerData() {
-    const selectedPlayerIds = getSelectedPlayers();
+    const selectedPlayerIds = getSelectedPlayers() || [];
     const allPlayers = getPlayers();
 
     if (selectedPlayerIds.length === 2) {
@@ -71,10 +71,10 @@ function loadPlayerData() {
         const p2 = allPlayers.find(p => p.id === selectedPlayerIds[1]);
 
         if (p1) {
-            gameState.players.p1 = { name: p1.name, avatar: p1.avatar };
+            gameState.players.p1 = { name: p1.name, avatar: p1.avatar, isChild: !!p1.isChild };
         }
         if (p2) {
-            gameState.players.p2 = { name: p2.name, avatar: p2.avatar };
+            gameState.players.p2 = { name: p2.name, avatar: p2.avatar, isChild: !!p2.isChild };
         }
     }
 }

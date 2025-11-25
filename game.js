@@ -1,6 +1,182 @@
 // ===== GAME SELECTION =====
 let gamesData = null;
 
+const LANGUAGE_PACK = {
+  vi: {
+    hub_title: "🎮 GAME HUB",
+    hub_subtitle: "Chọn trò chơi bạn thích",
+    manage_players_btn: "👥 Quản lý người chơi",
+    hub_version_note: "Sẽ có thêm game mới sớm thôi!",
+    language_label: "Ngôn ngữ",
+    game_badge_available: "Chơi ngay",
+    game_badge_coming: "Sắp ra mắt",
+    games: {
+      battleship: {
+        name: "Hải Chiến 2 Người",
+        description: "Đặt tàu và đấu trí trên biển (chơi luân phiên)",
+        players: "2 người chơi",
+      },
+      "memory-match": {
+        name: "Thử Trí Nhớ",
+        description: "Lật thẻ thú cưng, ai nhớ nhanh hơn sẽ thắng",
+        players: "2 người chơi",
+      },
+      "smart-shop": {
+        name: "Đua Siêu Thị",
+        description: "Đi chợ vui vẻ: đếm đồ, phân loại màu sắc",
+        players: "2 người chơi",
+      },
+      "magic-letter": {
+        name: "Săn Chữ Thần Kỳ",
+        description: "Tìm chữ, ghép từ tiếng Việt qua 3 cấp độ",
+        players: "2 người chơi",
+      },
+      "sushi-poison": {
+        name: "Sushi Có Độc!",
+        description: "Giấu độc và đoán xem đối thủ ăn miếng nào",
+        players: "2 người chơi",
+      },
+      "candy-tower": {
+        name: "Xây Tháp Kẹo",
+        description: "Đặt kẹo lên tháp, giữ cân bằng trong 10s",
+        players: "2 người chơi",
+      },
+      tictactoe: {
+        name: "Cờ Caro",
+        description: "Đang phát triển, hãy ghé lại sau nhé!",
+        players: "2 người chơi",
+      },
+      connect4: {
+        name: "Connect Four",
+        description: "Đang phát triển, hãy ghé lại sau nhé!",
+        players: "2 người chơi",
+      },
+      chess: {
+        name: "Cờ Vua",
+        description: "Đang phát triển, hãy ghé lại sau nhé!",
+        players: "2 người chơi",
+      },
+    },
+  },
+  en: {
+    hub_title: "🎮 GAME HUB",
+    hub_subtitle: "Choose your game",
+    manage_players_btn: "👥 Manage Players",
+    hub_version_note: "More games coming soon!",
+    language_label: "Language",
+    game_badge_available: "Play Now",
+    game_badge_coming: "Coming Soon",
+    games: {
+      battleship: {
+        name: "Battleship 2P",
+        description:
+          "Classic naval warfare strategy game (Offline Pass-Play)",
+        players: "2 Players",
+      },
+      "memory-match": {
+        name: "Memory Match Duel",
+        description:
+          "Turn-based memory matching game with animals (4×4, 5×4, or 6×6 grid)",
+        players: "2 Players",
+      },
+      "smart-shop": {
+        name: "Smart Shop Race",
+        description:
+          "Educational shopping race - count, colors & categories (3 levels)",
+        players: "2 Players",
+      },
+      "magic-letter": {
+        name: "Magic Letter Hunt",
+        description:
+          "Vietnamese letter learning game - find letters, words & bigrams (3 levels)",
+        players: "2 Players",
+      },
+      "sushi-poison": {
+        name: "Poison Sushi Duel",
+        description:
+          "Pick 2 poisoned sushi pieces and take turns eating them",
+        players: "2 Players",
+      },
+      "candy-tower": {
+        name: "Candy Tower Turn",
+        description:
+          "Stack candies on a wobbly tower and stay balanced",
+        players: "2 Players",
+      },
+      tictactoe: {
+        name: "Tic Tac Toe",
+        description: "Classic X and O game (Coming Soon)",
+        players: "2 Players",
+      },
+      connect4: {
+        name: "Connect Four",
+        description: "Connect 4 pieces in a row (Coming Soon)",
+        players: "2 Players",
+      },
+      chess: {
+        name: "Chess",
+        description: "Classic strategy board game (Coming Soon)",
+        players: "2 Players",
+      },
+    },
+  },
+};
+
+let currentLanguage =
+  localStorage.getItem("gameLanguage") &&
+  LANGUAGE_PACK[localStorage.getItem("gameLanguage")]
+    ? localStorage.getItem("gameLanguage")
+    : "vi";
+
+function t(key, fallback = "") {
+  const pack = LANGUAGE_PACK[currentLanguage] || {};
+  return pack[key] || fallback || key;
+}
+
+function getLocalizedGameData(gameId) {
+  const pack = LANGUAGE_PACK[currentLanguage];
+  if (!pack) return null;
+  return pack.games?.[gameId] || null;
+}
+
+function applyTranslations() {
+  document.querySelectorAll("[data-i18n-key]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-key");
+    if (!key) return;
+    const text = t(key, el.textContent.trim());
+    if (text) {
+      el.textContent = text;
+    }
+  });
+}
+
+function updateLanguageButtons() {
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    const lang = btn.dataset.lang;
+    btn.classList.toggle("active", lang === currentLanguage);
+  });
+}
+
+function setLanguage(lang) {
+  if (!LANGUAGE_PACK[lang]) return;
+  currentLanguage = lang;
+  localStorage.setItem("gameLanguage", lang);
+  applyTranslations();
+  updateLanguageButtons();
+  renderGames();
+}
+
+function initLanguageControls() {
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const lang = btn.dataset.lang;
+      setLanguage(lang);
+    });
+  });
+  applyTranslations();
+  updateLanguageButtons();
+}
+
 async function loadGames() {
   try {
     const response = await fetch("games.json");
@@ -39,15 +215,24 @@ function renderGames() {
     gameCard.className = `game-card ${game.status}`;
     gameCard.dataset.gameId = game.id;
 
+    const localizedGame = getLocalizedGameData(game.id);
+    const gameName = localizedGame?.name || game.name;
+    const gameDescription = localizedGame?.description || game.description;
+    const gamePlayers = localizedGame?.players || game.players;
+    const badgeText =
+      game.status === "available"
+        ? t("game_badge_available", "Play Now")
+        : t("game_badge_coming", "Coming Soon");
+
     gameCard.innerHTML = `
             <div class="game-status-badge ${game.status}">
-                ${game.status === "available" ? "Play Now" : "Coming Soon"}
+                ${badgeText}
             </div>
             <div class="game-card-content">
                 <span class="game-icon">${game.icon}</span>
-                <div class="game-name">${game.name}</div>
-                <div class="game-description">${game.description}</div>
-                <div class="game-players">${game.players}</div>
+                <div class="game-name">${gameName}</div>
+                <div class="game-description">${gameDescription}</div>
+                <div class="game-players">${gamePlayers}</div>
             </div>
         `;
 
@@ -85,6 +270,9 @@ function selectGame(gameId) {
     case "sushi-poison":
       window.location.href = "sushi-poison.html";
       break;
+    case "candy-tower":
+      window.location.href = "candy-tower.html";
+      break;
     default:
       alert("This game is coming soon!");
   }
@@ -113,18 +301,27 @@ function renderPlayersList() {
 
   playersList.innerHTML = "";
 
-  players.forEach((player) => {
+  players.forEach((player, index) => {
     const playerItem = document.createElement("div");
     playerItem.className = "player-item";
 
-    const avatarHtml = player.avatar
-      ? `<img src="${player.avatar}" alt="${player.name}" class="player-avatar">`
-      : createDefaultAvatar(player.name.charAt(0).toUpperCase());
+    const fallbackSeed = (player.name && player.name.charAt(0).toUpperCase()) ||
+      index + 1;
+    const avatarSrc = player.avatar || createDefaultAvatar(fallbackSeed);
+    const childBadge = player.isChild
+      ? '<span class="player-role-badge kid">Bé</span>'
+      : "";
+    const childNote = player.isChild
+      ? '<div class="player-item-meta">Đánh dấu là bé để bật hỗ trợ thân thiện</div>'
+      : "";
 
     playerItem.innerHTML = `
-            ${avatarHtml}
+            <div class="player-item-avatar">
+                <img src="${avatarSrc}" alt="${player.name}">
+            </div>
             <div class="player-info">
-                <div class="player-item-name">${player.name}</div>
+                <div class="player-item-name">${player.name}${childBadge}</div>
+                ${childNote}
             </div>
             <div class="player-actions">
                 <button class="btn btn-secondary btn-small" onclick="editPlayer('${player.id}')">Edit</button>
@@ -140,8 +337,11 @@ function addNewPlayer() {
   editingPlayerId = null;
   document.getElementById("playerEditTitle").textContent = "Add New Player";
   document.getElementById("playerNameInput").value = "";
-  document.getElementById("playerAvatarPreview").innerHTML =
-    createDefaultAvatar("?");
+  document.getElementById("playerAvatarPreview").innerHTML = `
+        <img src="${createDefaultAvatar(Date.now())}" alt="Default avatar">
+    `;
+  const childInput = document.getElementById("playerChildInput");
+  if (childInput) childInput.checked = false;
   showModal("playerEditModal");
 }
 
@@ -153,14 +353,18 @@ function editPlayer(id) {
 
   document.getElementById("playerEditTitle").textContent = "Edit Player";
   document.getElementById("playerNameInput").value = player.name;
+  const childInput = document.getElementById("playerChildInput");
+  if (childInput) childInput.checked = !!player.isChild;
 
   const avatarPreview = document.getElementById("playerAvatarPreview");
   if (player.avatar) {
-    avatarPreview.innerHTML = `<img src="${player.avatar}" alt="${player.name}" class="player-avatar">`;
+    avatarPreview.innerHTML = `<img src="${player.avatar}" alt="${player.name}">`;
   } else {
-    avatarPreview.innerHTML = createDefaultAvatar(
-      player.name.charAt(0).toUpperCase()
-    );
+    const fallbackSeed = (player.name && player.name.charAt(0).toUpperCase()) ||
+      Date.now();
+    avatarPreview.innerHTML = `<img src="${createDefaultAvatar(
+      fallbackSeed
+    )}" alt="${player.name}">`;
   }
 
   showModal("playerEditModal");
@@ -192,13 +396,15 @@ function savePlayer() {
   const avatarPreview = document.getElementById("playerAvatarPreview");
   const img = avatarPreview.querySelector("img");
   const avatar = img ? img.src : null;
+  const childInput = document.getElementById("playerChildInput");
+  const isChild = childInput ? childInput.checked : false;
 
   if (editingPlayerId) {
     // Update existing player
-    updatePlayer(editingPlayerId, name, avatar);
+    updatePlayer(editingPlayerId, name, avatar, isChild);
   } else {
     // Add new player
-    addPlayer(name, avatar);
+    addPlayer(name, avatar, isChild);
   }
 
   renderPlayersList();
@@ -207,6 +413,8 @@ function savePlayer() {
 
 // Handle avatar upload in player edit modal
 document.addEventListener("DOMContentLoaded", () => {
+  initLanguageControls();
+
   const avatarInput = document.getElementById("playerAvatarInput");
   if (avatarInput) {
     avatarInput.addEventListener("change", (e) => {
@@ -225,7 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       imageToBase64(file, (base64) => {
         const avatarPreview = document.getElementById("playerAvatarPreview");
-        avatarPreview.innerHTML = `<img src="${base64}" alt="Avatar" class="player-avatar">`;
+        avatarPreview.innerHTML = `<img src="${base64}" alt="Avatar">`;
       });
     });
   }
@@ -237,7 +445,7 @@ function showPlayerSelection(gameId) {
   renderAvailablePlayers();
 
   // Load previously selected players if any
-  const selectedPlayerIds = getSelectedPlayers();
+  const selectedPlayerIds = getSelectedPlayers() || [];
   const players = getPlayers();
 
   if (selectedPlayerIds.length === 2) {
@@ -296,13 +504,18 @@ function updateSelectedPlayerSlot(slot, player) {
   const slotElement = document.getElementById(`selectedPlayer${slot}`);
 
   if (player) {
-    const avatarHtml = player.avatar
-      ? `<img src="${player.avatar}" alt="${player.name}" class="player-card-avatar">`
-      : createDefaultAvatar(player.name.charAt(0).toUpperCase());
+    const fallbackSeed = (player.name && player.name.charAt(0).toUpperCase()) || slot;
+    const avatarSrc = player.avatar || createDefaultAvatar(fallbackSeed);
+    const childBadge = player.isChild
+      ? '<span class="player-role-badge kid">Bé</span>'
+      : "";
 
     slotElement.innerHTML = `
-            <div class="player-card-avatar">${avatarHtml}</div>
-            <div class="player-card-name">${player.name}</div>
+            <div class="player-card-avatar"><img src="${avatarSrc}" alt="${player.name}"></div>
+            <div class="player-card-name">
+                <span>${player.name}</span>
+                ${childBadge}
+            </div>
         `;
     slotElement.dataset.playerId = player.id;
   } else {
@@ -320,18 +533,24 @@ function renderAvailablePlayers() {
 
   availablePlayers.innerHTML = "<h4>Available Players:</h4>";
 
-  players.forEach((player) => {
+  players.forEach((player, index) => {
     const playerItem = document.createElement("div");
     playerItem.className = "available-player-item";
     playerItem.onclick = () => selectAvailablePlayer(player.id);
 
-    const avatarHtml = player.avatar
-      ? `<img src="${player.avatar}" alt="${player.name}" class="player-avatar-small">`
-      : createDefaultAvatar(player.name.charAt(0).toUpperCase());
+    const fallbackSeed = (player.name && player.name.charAt(0).toUpperCase()) ||
+      index + 1;
+    const avatarSrc = player.avatar || createDefaultAvatar(fallbackSeed);
+    const childBadge = player.isChild
+      ? '<span class="player-role-badge kid">Bé</span>'
+      : "";
 
     playerItem.innerHTML = `
-            ${avatarHtml}
-            <span>${player.name}</span>
+            <div class="available-player-avatar"><img src="${avatarSrc}" alt="${player.name}"></div>
+            <div class="available-player-info">
+                <span class="available-player-name">${player.name}</span>
+                ${childBadge}
+            </div>
         `;
 
     availablePlayers.appendChild(playerItem);
@@ -378,8 +597,10 @@ function confirmPlayerSelection() {
     if (gameState) {
       gameState.player1.captainName = p1.name;
       gameState.player1.captainImage = p1.avatar;
+      gameState.player1.isChild = !!p1.isChild;
       gameState.player2.captainName = p2.name;
       gameState.player2.captainImage = p2.avatar;
+      gameState.player2.isChild = !!p2.isChild;
     }
   }
 
@@ -524,6 +745,9 @@ let gameState = {
   isHorizontal: true,
   isProcessingAttack: false,
   draggingShip: null,
+  hintTimeoutId: null,
+  hintCell: null,
+  missStreak: { 1: 0, 2: 0 },
 
   player1: {
     board: Array(BOARD_SIZE)
@@ -540,6 +764,7 @@ let gameState = {
     shipsDestroyedByType: { 2: 0, 3: 0, 4: 0 }, // Track by ship length
     captainImage: null, // Base64 image data
     captainName: "Player 1",
+    isChild: false,
   },
 
   player2: {
@@ -557,6 +782,7 @@ let gameState = {
     shipsDestroyedByType: { 2: 0, 3: 0, 4: 0 }, // Track by ship length
     captainImage: null, // Base64 image data
     captainName: "Player 2",
+    isChild: false,
   },
 
   settings: {
@@ -595,11 +821,13 @@ function startGame() {
   gameState.selectedShip = null;
   gameState.isProcessingAttack = false;
   gameState.draggingShip = null;
+  clearChildHint();
   resetPlayerData(gameState.player1);
   resetPlayerData(gameState.player2);
   gameState.turnCount = 0;
   gameState.historyShots = [];
   gameState.gameStartTime = null;
+  gameState.missStreak = { 1: 0, 2: 0 };
   showSetupScreen(1);
 }
 
@@ -1411,6 +1639,7 @@ function showBattleScreen() {
   updateBattleCaptainDisplay();
   renderBattleBoards();
   showScreen("battleScreen");
+  scheduleChildHint();
 
   // Show turn popup for first player after a short delay
   setTimeout(() => {
@@ -1513,6 +1742,69 @@ function renderBattleBoards() {
       battleBoard.appendChild(cell);
     }
   }
+
+  applyChildHintHighlight();
+}
+
+function scheduleChildHint() {
+  clearChildHint();
+  if (!gameState) return;
+  const player = getCurrentPlayer();
+  if (!player || !player.isChild) return;
+  if ((gameState.missStreak[gameState.currentPlayer] || 0) < 3) return;
+  gameState.hintTimeoutId = setTimeout(() => {
+    showChildHint();
+  }, 10000);
+}
+
+function clearChildHint() {
+  if (gameState.hintTimeoutId) {
+    clearTimeout(gameState.hintTimeoutId);
+    gameState.hintTimeoutId = null;
+  }
+  if (gameState.hintCell) {
+    const { row, col } = gameState.hintCell;
+    const cell = document.querySelector(
+      `#battleBoard .cell[data-row="${row}"][data-col="${col}"]`
+    );
+    if (cell) {
+      cell.classList.remove("child-hint");
+    }
+    gameState.hintCell = null;
+  }
+}
+
+function showChildHint() {
+  if (!gameState) return;
+  gameState.hintTimeoutId = null;
+  const player = getCurrentPlayer();
+  if (!player || !player.isChild) return;
+  if ((gameState.missStreak[gameState.currentPlayer] || 0) < 3) return;
+  const opponent = getOpponentPlayer();
+  const candidates = [];
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
+      if (player.attacks[row][col] === 0 && opponent.board[row][col] === 1) {
+        candidates.push({ row, col });
+      }
+    }
+  }
+
+  if (!candidates.length) return;
+  const target = candidates[Math.floor(Math.random() * candidates.length)];
+  gameState.hintCell = target;
+  applyChildHintHighlight();
+}
+
+function applyChildHintHighlight() {
+  if (!gameState || !gameState.hintCell) return;
+  const { row, col } = gameState.hintCell;
+  const cell = document.querySelector(
+    `#battleBoard .cell[data-row="${row}"][data-col="${col}"]`
+  );
+  if (cell) {
+    cell.classList.add("child-hint");
+  }
 }
 
 function handleAttack(e) {
@@ -1520,6 +1812,7 @@ function handleAttack(e) {
     // Ignore extra taps until current attack animation completes
     return;
   }
+  clearChildHint();
   const row = parseInt(e.target.dataset.row);
   const col = parseInt(e.target.dataset.col);
 
@@ -1550,6 +1843,7 @@ function handleAttack(e) {
   if (isHit) {
     currentPlayerData.attacks[row][col] = 2; // Hit
     currentPlayerData.hits++;
+    gameState.missStreak[gameState.currentPlayer] = 0;
     result = "hit";
 
     // Find which ship was hit
@@ -1608,6 +1902,8 @@ function handleAttack(e) {
   } else {
     currentPlayerData.attacks[row][col] = 1; // Miss
     currentPlayerData.misses++;
+    gameState.missStreak[gameState.currentPlayer] =
+      (gameState.missStreak[gameState.currentPlayer] || 0) + 1;
 
     // Play miss sound
     playSound("miss");
@@ -1635,6 +1931,7 @@ function handleAttack(e) {
     updateBattleStatus(`${playerName}, choose a cell to fire`);
     updateBattleCaptainDisplay(); // Update captain avatar for new player
     renderBattleBoards(); // Re-render to update clickable cells
+    scheduleChildHint();
 
     gameState.isProcessingAttack = false;
 
@@ -1710,6 +2007,7 @@ function updateBattleStatus(message) {
 
 // ===== ENDGAME =====
 function endGame(winner) {
+  clearChildHint();
   const winnerData = winner === 1 ? gameState.player1 : gameState.player2;
   const winnerName = winnerData.captainName || `Player ${winner}`;
 

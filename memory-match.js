@@ -176,8 +176,8 @@ let gameState = {
         soundEffects: true
     },
     players: {
-        p1: { name: 'Player 1', avatar: null },
-        p2: { name: 'Player 2', avatar: null }
+        p1: { name: 'Player 1', avatar: null, isChild: false },
+        p2: { name: 'Player 2', avatar: null, isChild: false }
     }
 };
 
@@ -205,17 +205,17 @@ function loadPlayerData() {
     }
 
     if (!p1) {
-        p1 = { name: 'Player 1', avatar: null };
+        p1 = { name: 'Player 1', avatar: null, isChild: false };
     }
     if (!p2) {
-        p2 = { name: 'Player 2', avatar: null };
+        p2 = { name: 'Player 2', avatar: null, isChild: false };
     }
 
     if (p1) {
-        gameState.players.p1 = { name: p1.name, avatar: p1.avatar };
+        gameState.players.p1 = { name: p1.name, avatar: p1.avatar, isChild: !!p1.isChild };
     }
     if (p2) {
-        gameState.players.p2 = { name: p2.name, avatar: p2.avatar };
+        gameState.players.p2 = { name: p2.name, avatar: p2.avatar, isChild: !!p2.isChild };
     }
 
     updateScoreboardPlayerInfo();

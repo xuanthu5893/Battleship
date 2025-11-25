@@ -6,8 +6,8 @@ let sushiState = null;
 
 function defaultPlayers() {
     return {
-        p1: { name: 'Player 1', avatar: null },
-        p2: { name: 'Player 2', avatar: null }
+        p1: { name: 'Player 1', avatar: null, isChild: false },
+        p2: { name: 'Player 2', avatar: null, isChild: false }
     };
 }
 
@@ -21,19 +21,24 @@ function loadPlayerProfiles() {
     profiles.p2.avatar = fallbackAvatars.p2;
     if (typeof getSelectedPlayers === 'function' && typeof getPlayers === 'function') {
         const selected = getSelectedPlayers() || [];
-        const all = getPlayers();
-        if (selected.length === 2) {
-            const p1 = all.find(p => p.id === selected[0]);
-            const p2 = all.find(p => p.id === selected[1]);
-            if (p1) {
-                profiles.p1.name = p1.name;
-                profiles.p1.avatar = p1.avatar || profiles.p1.avatar;
+        const allPlayers = getPlayers() || [];
+        ['p1', 'p2'].forEach((slot, index) => {
+            let playerData = null;
+            const selectedId = selected[index];
+            if (selectedId) {
+                playerData = allPlayers.find(p => p.id === selectedId) || null;
             }
-            if (p2) {
-                profiles.p2.name = p2.name;
-                profiles.p2.avatar = p2.avatar || profiles.p2.avatar;
+            if (!playerData && allPlayers[index]) {
+                playerData = allPlayers[index];
             }
-        }
+            if (playerData) {
+                profiles[slot].name = playerData.name || profiles[slot].name;
+                profiles[slot].avatar = playerData.avatar || profiles[slot].avatar;
+                profiles[slot].isChild = !!playerData.isChild;
+            } else {
+                profiles[slot].isChild = false;
+            }
+        });
     }
     return profiles;
 }
@@ -56,8 +61,10 @@ function initSushiState() {
         currentPlayer: 'p1',
         winner: null,
         players: loadPlayerProfiles(),
-        isAnimating: false
+        isAnimating: false,
+        pendingAntidote: null
     };
+    sushiState.powerUps = buildPlayerPowerUps(sushiState.players);
 }
 
 function generateSushiBoard(owner) {
@@ -72,6 +79,34 @@ function generateSushiBoard(owner) {
             poisoned: false
         };
     });
+}
+
+function buildPlayerPowerUps(players) {
+    return {
+        p1: { antidotes: players.p1.isChild ? 1 : 0 },
+        p2: { antidotes: players.p2.isChild ? 1 : 0 }
+    };
+}
+
+function getPoisonLimit(playerKey) {
+    if (!sushiState || !sushiState.players[playerKey]) return 2;
+    return 2 + (sushiState.players[playerKey].isChild ? 1 : 0);
+}
+
+function getRemainingAntidotes(playerKey) {
+    if (!sushiState || !sushiState.powerUps) return 0;
+    const bucket = sushiState.powerUps[playerKey];
+    return bucket ? bucket.antidotes : 0;
+}
+
+function tryUseAntidote(playerKey) {
+    if (!sushiState || !sushiState.powerUps) return false;
+    const store = sushiState.powerUps[playerKey];
+    if (store && store.antidotes > 0) {
+        store.antidotes -= 1;
+        return true;
+    }
+    return false;
 }
 
 function initSushiAudio() {
@@ -122,7 +157,9 @@ function showPoisonSetup(playerKey) {
     sushiState.phase = playerKey === 'p1' ? 'setup_p1' : 'setup_p2';
     const targetBoard = playerKey === 'p1' ? 'p2' : 'p1';
     const title = `Poison Setup – ${sushiState.players[playerKey].name}`;
-    const instruction = `Chọn 2 miếng sushi của ${sushiState.players[targetBoard].name} để tẩm độc`;
+    const poisonLimit = getPoisonLimit(playerKey);
+    const bonusNote = sushiState.players[playerKey].isChild ? ' (Bé được chọn thêm 1 miếng cho vui!)' : '';
+    const instruction = `Chọn ${poisonLimit} miếng sushi của ${sushiState.players[targetBoard].name} để tẩm độc${bonusNote}`;
     document.getElementById('setupTitle').textContent = title;
     document.getElementById('setupInstruction').textContent = instruction;
     renderBoard('setupBoard', sushiState.boards[targetBoard], {
@@ -137,11 +174,15 @@ function showPoisonSetup(playerKey) {
 
 function togglePoisonSelection(playerKey, targetBoard, index) {
     const selection = sushiState.poisonSelections[playerKey];
+    const limit = getPoisonLimit(playerKey);
     const alreadySelected = selection.includes(index);
     if (alreadySelected) {
         sushiState.poisonSelections[playerKey] = selection.filter((i) => i !== index);
     } else {
-        if (selection.length >= 2) return;
+        if (selection.length >= limit) {
+            showToast(`Đã chọn đủ ${limit} miếng rồi!`);
+            return;
+        }
         sushiState.poisonSelections[playerKey].push(index);
     }
     renderBoard('setupBoard', sushiState.boards[targetBoard], {
@@ -155,10 +196,13 @@ function togglePoisonSelection(playerKey, targetBoard, index) {
 
 function updateSetupSelectionInfo(playerKey) {
     const count = sushiState.poisonSelections[playerKey].length;
+    const limit = getPoisonLimit(playerKey);
     document.getElementById('selectedCount').textContent = count;
+    const limitEl = document.getElementById('selectedLimit');
+    if (limitEl) limitEl.textContent = limit;
     const readyButton = document.getElementById('readyButton');
     if (readyButton) {
-        readyButton.disabled = count !== 2;
+        readyButton.disabled = count !== limit;
     }
 }
 
@@ -178,7 +222,8 @@ function resetPoisonSelection() {
 function confirmPoisonSelection() {
     const playerKey = sushiState.phase === 'setup_p1' ? 'p1' : 'p2';
     const targetBoard = playerKey === 'p1' ? 'p2' : 'p1';
-    if (sushiState.poisonSelections[playerKey].length !== 2) return;
+    const limit = getPoisonLimit(playerKey);
+    if (sushiState.poisonSelections[playerKey].length !== limit) return;
 
     sushiState.poisonSelections[playerKey].forEach((index) => {
         sushiState.boards[targetBoard][index].poisoned = true;
@@ -291,10 +336,17 @@ function handleEat(boardKey, index) {
         if (card.poisoned) {
             card.state = 'revealedPoison';
             renderBattleBoards();
-            showToast('Oh no! Poisoned!');
-            setTimeout(() => {
-                endGame(boardKey === 'p1' ? 'p2' : 'p1');
-            }, 900);
+            const saved = tryUseAntidote(boardKey);
+            if (saved) {
+                card.poisoned = false;
+                sushiState.pendingAntidote = { boardKey, cardIndex: index };
+                showAntidoteModal(boardKey);
+            } else {
+                showToast('Oh no! Poisoned!');
+                setTimeout(() => {
+                    endGame(boardKey === 'p1' ? 'p2' : 'p1');
+                }, 900);
+            }
         } else {
             card.state = 'eaten';
             renderBattleBoards();
@@ -316,7 +368,11 @@ function updateBattleStatus() {
     const label = document.getElementById('currentTurnLabel');
     if (label) label.textContent = currentPlayer.name;
     const status = document.getElementById('battleStatus');
-    if (status) status.textContent = `${currentPlayer.name}, chọn 1 miếng để ăn`;
+    if (status) {
+        const antidotes = currentPlayer.isChild ? getRemainingAntidotes(currentKey) : 0;
+        const bonus = antidotes > 0 ? ` (còn ${antidotes} thuốc giải)` : '';
+        status.textContent = `${currentPlayer.name}${bonus}, chọn 1 miếng để ăn`;
+    }
     updateAvatarImage('currentPlayerAvatar', currentKey);
     updateBadgeTheme('currentTurnBadge', currentKey);
 }
@@ -408,6 +464,49 @@ function showToast(message) {
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+function showAntidoteModal(playerKey) {
+    const modal = document.getElementById('antidoteModal');
+    const message = document.getElementById('antidoteMessage');
+    if (message && sushiState) {
+        const player = sushiState.players[playerKey];
+        const remaining = player.isChild ? getRemainingAntidotes(playerKey) : 0;
+        const tail = remaining > 0 ? `Còn ${remaining} thuốc giải.` : 'Đây là liều cuối, cẩn thận nhé!';
+        message.textContent = `${player.name} đã uống thuốc giải! ${tail}`;
+    }
+    if (modal) modal.classList.add('active');
+}
+
+function hideAntidoteModal() {
+    const modal = document.getElementById('antidoteModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function continueAfterAntidote() {
+    if (!sushiState) {
+        hideAntidoteModal();
+        return;
+    }
+    hideAntidoteModal();
+    const pending = sushiState.pendingAntidote;
+    sushiState.pendingAntidote = null;
+    if (!pending) {
+        sushiState.isAnimating = false;
+        return;
+    }
+    const board = sushiState.boards[pending.boardKey];
+    if (board && board[pending.cardIndex]) {
+        board[pending.cardIndex].state = 'eaten';
+    }
+    sushiState.isAnimating = false;
+    sushiState.currentPlayer = pending.boardKey === 'p1' ? 'p2' : 'p1';
+    renderBattleBoards();
+    showToast('Đã giải độc, tiếp tục nào!');
+    if (!checkDraw()) {
+        updateBattleStatus();
+        renderBattleBoards();
+    }
 }
 
 function showHowToPlay() {

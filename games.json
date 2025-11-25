@@ -51,6 +51,16 @@
       "version": "1.0.0"
     },
     {
+      "id": "candy-tower",
+      "name": "Xây Tháp Kẹo",
+      "description": "Candy Tower Turn - đặt kẹo lên tháp, giữ cân bằng, 10s mỗi lượt",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "🍬",
+      "color": "#ff6f91",
+      "version": "1.0.0"
+    },
+    {
       "id": "tictactoe",
       "name": "Tic Tac Toe",
       "description": "Classic X and O game (Coming Soon)",
