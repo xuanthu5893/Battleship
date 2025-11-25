@@ -3,7 +3,7 @@ let gamesData = null;
 
 const LANGUAGE_PACK = {
   vi: {
-    hub_title: "🎮 GAME HUB",
+    hub_title: "🎮 FAMILY GAME HUB",
     hub_subtitle: "Chọn trò chơi bạn thích",
     manage_players_btn: "👥 Quản lý người chơi",
     hub_version_note: "Sẽ có thêm game mới sớm thôi!",
@@ -16,7 +16,7 @@ const LANGUAGE_PACK = {
     game_badge_coming: "Sắp ra mắt",
   },
   en: {
-    hub_title: "🎮 GAME HUB",
+    hub_title: "🎮 FAMILY GAME HUB",
     hub_subtitle: "Choose your game",
     manage_players_btn: "👥 Manage Players",
     hub_version_note: "More games coming soon!",

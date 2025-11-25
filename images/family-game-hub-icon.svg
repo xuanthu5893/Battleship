@@ -1,0 +1,35 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6a5acd"/>
+      <stop offset="50%" stop-color="#8a7dff"/>
+      <stop offset="100%" stop-color="#4dd0e1"/>
+    </linearGradient>
+    <linearGradient id="pad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#dfe5ff"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6f91"/>
+      <stop offset="100%" stop-color="#ff9472"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <g opacity="0.18">
+    <circle cx="96" cy="28" r="14" fill="#fff"/>
+    <circle cx="32" cy="20" r="10" fill="#fff"/>
+    <circle cx="60" cy="12" r="8" fill="#fff"/>
+  </g>
+  <g transform="translate(16 32)">
+    <path d="M18 66c-9.5 0-18-7.5-18-18s8.5-18 18-18h10c3.2-9.9 12.4-17 23-17s19.8 7.1 23 17h10c9.5 0 18 7.5 18 18s-8.5 18-18 18H18z" fill="url(#pad)"/>
+    <circle cx="34" cy="48" r="9" fill="#7c4dff"/>
+    <rect x="58" y="42" width="18" height="4" rx="2" fill="#9099c6"/>
+    <rect x="63" y="50" width="8" height="4" rx="2" fill="#9099c6"/>
+    <path d="M52 26c-4 0-7.5 3.5-7.5 8 0 7 8.7 12.9 12.3 15.8a2 2 0 0 0 2.4 0C63 46.9 71.5 41 71.5 34c0-4.5-3.5-8-7.5-8-2.7 0-5 1.4-6.5 3.5-1.5-2.1-3.8-3.5-6.5-3.5z" fill="url(#heart)"/>
+  </g>
+  <g transform="translate(28 18)" fill="#ffeaa7">
+    <circle cx="18" cy="12" r="8"/>
+    <circle cx="44" cy="8" r="9"/>
+    <circle cx="70" cy="12" r="8"/>
+  </g>
+</svg>
