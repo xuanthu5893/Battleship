@@ -107,7 +107,20 @@
         </div>
     </div>
 
-    <div id="candyToast" class="toast"></div>
+    <div id="candyToast" class="toast">
+        <div class="toast-content" id="candyToastMessage"></div>
+    </div>
+
+    <div id="quitCandyModal" class="modal">
+        <div class="modal-content">
+            <h2>Quit Game?</h2>
+            <p>Are you sure you want to quit the current game?</p>
+            <div class="actions-row" style="justify-content:center; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="cancelCandyQuit()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmCandyQuit()">Yes, quit</button>
+            </div>
+        </div>
+    </div>
 
     <script src="players.js"></script>
     <script src="candy-tower.js"></script>

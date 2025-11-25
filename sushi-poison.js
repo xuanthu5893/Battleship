@@ -461,7 +461,8 @@ function rematch() {
 function showToast(message) {
     const toast = document.getElementById('sushiToast');
     if (!toast) return;
-    toast.textContent = message;
+    const msg = document.getElementById('sushiToastMessage');
+    if (msg) msg.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1500);
 }
@@ -522,15 +523,25 @@ function goBackToHub() {
 }
 
 function returnToHomeFromBattle() {
-    if (confirm('Quit current game and return to menu?')) {
-        initSushiState();
-        showHome();
-    }
+    const modal = document.getElementById('quitConfirmModal');
+    if (modal) modal.classList.add('active');
 }
 
 function showHome() {
     if (sushiState) sushiState.phase = 'home';
     showScreen('homeScreen');
+}
+
+function confirmQuitBattle() {
+    const modal = document.getElementById('quitConfirmModal');
+    if (modal) modal.classList.remove('active');
+    initSushiState();
+    showHome();
+}
+
+function cancelQuitBattle() {
+    const modal = document.getElementById('quitConfirmModal');
+    if (modal) modal.classList.remove('active');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

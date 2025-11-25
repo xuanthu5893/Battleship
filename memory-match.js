@@ -832,11 +832,24 @@ function rematch() {
 }
 
 function quitGame() {
-    if (confirm('Are you sure you want to quit the current game?')) {
-        clearInterval(gameState.previewTimer);
-        clearInterval(gameState.turnTimer);
-        showScreen('homeScreen');
+    const modal = document.getElementById('quitModal');
+    if (modal) {
+        modal.classList.add('active');
     }
+}
+
+function closeQuitModal() {
+    const modal = document.getElementById('quitModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function confirmQuitGame() {
+    clearInterval(gameState.previewTimer);
+    clearInterval(gameState.turnTimer);
+    showScreen('homeScreen');
+    closeQuitModal();
 }
 
 // ===== INITIALIZE =====

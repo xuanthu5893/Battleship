@@ -4,7 +4,7 @@ A classic Battleship game for 2 players in offline pass-and-play mode. Built wit
 
 ## Features
 
-- **Classic Battleship Gameplay**: Traditional rules with 4 ships (1x2-cell, 2x3-cell, 1x4-cell)
+- **Classic Battleship Gameplay**: Traditional rules with 4 ships (1xPatrol Boat, 2xCruiser, 1xBattleship)
 - **Pass-and-Play Mode**: Perfect for 2 players sharing one device
 - **Ship Placement**: Manual placement with preview or random placement option
 - **Smart Validation**: Ships cannot touch each other (including corners)
@@ -50,7 +50,7 @@ A classic Battleship game for 2 players in offline pass-and-play mode. Built wit
 
 ## Ship Types
 
-- **Destroyer** (2 cells): 1 ship
+- **Patrol Boat** (2 cells): 1 ship
 - **Cruiser** (3 cells): 2 ships
 - **Battleship** (4 cells): 1 ship
 

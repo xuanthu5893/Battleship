@@ -337,24 +337,35 @@ h1.title {
 
 .toast {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(120%);
-    background: #2d2d2d;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 999px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-    transition: transform 0.4s ease, opacity 0.4s ease;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
     opacity: 0;
     pointer-events: none;
-    z-index: 10;
-    font-size: 0.9em;
+    transition: opacity 0.25s ease;
+    z-index: 50;
 }
 
 .toast.show {
-    transform: translateX(-50%) translateY(0);
     opacity: 1;
+    pointer-events: auto;
+}
+
+.toast .toast-content {
+    background: #2d2d2d;
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 26px;
+    font-size: 1em;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+.toast.show .toast-content {
+    transform: scale(1);
 }
 
 /* ===== MODAL ===== */
@@ -482,11 +493,6 @@ h1.title {
 
     .sushi-card span.label {
         font-size: 0.65rem;
-    }
-
-    .actions-row {
-        flex-direction: column;
-        gap: 6px;
     }
 
     h1.title {

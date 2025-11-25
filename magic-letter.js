@@ -147,7 +147,7 @@ function goHome() {
 }
 
 function quitGame() {
-    if (confirm('Bạn có chắc muốn thoát game? (Are you sure you want to quit?)')) {
+    if (confirm('Are you sure you want to quit the current game?')) {
         clearTimers();
         showScreen('homeScreen');
     }

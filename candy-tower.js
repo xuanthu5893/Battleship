@@ -481,7 +481,8 @@ function setCandyStatus(message) {
 function showCandyToast(message) {
     const toast = document.getElementById('candyToast');
     if (!toast) return;
-    toast.textContent = message;
+    const box = document.getElementById('candyToastMessage');
+    if (box) box.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1400);
 }
@@ -520,11 +521,21 @@ function endCandyGame(winnerKey, reason) {
 }
 
 function returnCandyHomeConfirm() {
-    if (confirm('Quit current game and go back to menu?')) {
-        stopCandyTimer();
-        candyState.phase = 'home';
-        setCandyScreen('homeScreen');
-    }
+    const modal = document.getElementById('quitCandyModal');
+    if (modal) modal.classList.add('active');
+}
+
+function confirmCandyQuit() {
+    const modal = document.getElementById('quitCandyModal');
+    if (modal) modal.classList.remove('active');
+    stopCandyTimer();
+    candyState.phase = 'home';
+    setCandyScreen('homeScreen');
+}
+
+function cancelCandyQuit() {
+    const modal = document.getElementById('quitCandyModal');
+    if (modal) modal.classList.remove('active');
 }
 
 function showCandyHowTo() {

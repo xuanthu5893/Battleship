@@ -8,55 +8,12 @@ const LANGUAGE_PACK = {
     manage_players_btn: "👥 Quản lý người chơi",
     hub_version_note: "Sẽ có thêm game mới sớm thôi!",
     language_label: "Ngôn ngữ",
+    quit_modal_title: "Thoát trò chơi?",
+    quit_modal_text: "Bạn có chắc muốn thoát ván hiện tại không?",
+    quit_modal_cancel: "Hủy",
+    quit_modal_confirm: "Thoát",
     game_badge_available: "Chơi ngay",
     game_badge_coming: "Sắp ra mắt",
-    games: {
-      battleship: {
-        name: "Hải Chiến 2 Người",
-        description: "Đặt tàu và đấu trí trên biển (chơi luân phiên)",
-        players: "2 người chơi",
-      },
-      "memory-match": {
-        name: "Thử Trí Nhớ",
-        description: "Lật thẻ thú cưng, ai nhớ nhanh hơn sẽ thắng",
-        players: "2 người chơi",
-      },
-      "smart-shop": {
-        name: "Đua Siêu Thị",
-        description: "Đi chợ vui vẻ: đếm đồ, phân loại màu sắc",
-        players: "2 người chơi",
-      },
-      "magic-letter": {
-        name: "Săn Chữ Thần Kỳ",
-        description: "Tìm chữ, ghép từ tiếng Việt qua 3 cấp độ",
-        players: "2 người chơi",
-      },
-      "sushi-poison": {
-        name: "Sushi Có Độc!",
-        description: "Giấu độc và đoán xem đối thủ ăn miếng nào",
-        players: "2 người chơi",
-      },
-      "candy-tower": {
-        name: "Xây Tháp Kẹo",
-        description: "Đặt kẹo lên tháp, giữ cân bằng trong 10s",
-        players: "2 người chơi",
-      },
-      tictactoe: {
-        name: "Cờ Caro",
-        description: "Đang phát triển, hãy ghé lại sau nhé!",
-        players: "2 người chơi",
-      },
-      connect4: {
-        name: "Connect Four",
-        description: "Đang phát triển, hãy ghé lại sau nhé!",
-        players: "2 người chơi",
-      },
-      chess: {
-        name: "Cờ Vua",
-        description: "Đang phát triển, hãy ghé lại sau nhé!",
-        players: "2 người chơi",
-      },
-    },
   },
   en: {
     hub_title: "🎮 GAME HUB",
@@ -64,61 +21,12 @@ const LANGUAGE_PACK = {
     manage_players_btn: "👥 Manage Players",
     hub_version_note: "More games coming soon!",
     language_label: "Language",
+    quit_modal_title: "Quit Game?",
+    quit_modal_text: "Are you sure you want to quit the current game?",
+    quit_modal_cancel: "Cancel",
+    quit_modal_confirm: "Yes, quit",
     game_badge_available: "Play Now",
     game_badge_coming: "Coming Soon",
-    games: {
-      battleship: {
-        name: "Battleship 2P",
-        description:
-          "Classic naval warfare strategy game (Offline Pass-Play)",
-        players: "2 Players",
-      },
-      "memory-match": {
-        name: "Memory Match Duel",
-        description:
-          "Turn-based memory matching game with animals (4×4, 5×4, or 6×6 grid)",
-        players: "2 Players",
-      },
-      "smart-shop": {
-        name: "Smart Shop Race",
-        description:
-          "Educational shopping race - count, colors & categories (3 levels)",
-        players: "2 Players",
-      },
-      "magic-letter": {
-        name: "Magic Letter Hunt",
-        description:
-          "Vietnamese letter learning game - find letters, words & bigrams (3 levels)",
-        players: "2 Players",
-      },
-      "sushi-poison": {
-        name: "Poison Sushi Duel",
-        description:
-          "Pick 2 poisoned sushi pieces and take turns eating them",
-        players: "2 Players",
-      },
-      "candy-tower": {
-        name: "Candy Tower Turn",
-        description:
-          "Stack candies on a wobbly tower and stay balanced",
-        players: "2 Players",
-      },
-      tictactoe: {
-        name: "Tic Tac Toe",
-        description: "Classic X and O game (Coming Soon)",
-        players: "2 Players",
-      },
-      connect4: {
-        name: "Connect Four",
-        description: "Connect 4 pieces in a row (Coming Soon)",
-        players: "2 Players",
-      },
-      chess: {
-        name: "Chess",
-        description: "Classic strategy board game (Coming Soon)",
-        players: "2 Players",
-      },
-    },
   },
 };
 
@@ -133,10 +41,27 @@ function t(key, fallback = "") {
   return pack[key] || fallback || key;
 }
 
-function getLocalizedGameData(gameId) {
-  const pack = LANGUAGE_PACK[currentLanguage];
-  if (!pack) return null;
-  return pack.games?.[gameId] || null;
+function getLocalizedGameData(game) {
+  if (!game) return null;
+  const translations = game.translations || {};
+  return (
+    translations[currentLanguage] ||
+    translations.en ||
+    translations.vi ||
+    null
+  );
+}
+
+function getBadgeLabel(type) {
+  const fallbackKey =
+    type === "available" ? "game_badge_available" : "game_badge_coming";
+  const fallbackText = type === "available" ? "Play Now" : "Coming Soon";
+  const localized =
+    gamesData?.badges?.[type]?.[currentLanguage] ||
+    gamesData?.badges?.[type]?.en ||
+    gamesData?.badges?.[type]?.vi ||
+    null;
+  return localized || t(fallbackKey, fallbackText);
 }
 
 function applyTranslations() {
@@ -186,6 +111,16 @@ async function loadGames() {
     console.error("Error loading games:", error);
     // Fallback to hardcoded games if JSON fails to load
     gamesData = {
+      badges: {
+        available: {
+          vi: "Chơi ngay",
+          en: "Play Now",
+        },
+        coming: {
+          vi: "Sắp ra mắt",
+          en: "Coming Soon",
+        },
+      },
       games: [
         {
           id: "battleship",
@@ -197,6 +132,135 @@ async function loadGames() {
           icon: "🚢",
           color: "#4dd0e1",
           version: "1.0.0",
+          translations: {
+            vi: {
+              name: "Hải Chiến 2 Người",
+              description: "Đặt tàu và đấu trí trên biển (chơi luân phiên)",
+              players: "2 người chơi",
+            },
+            en: {
+              name: "Battleship 2P",
+              description:
+                "Classic naval warfare strategy game (Offline Pass-Play)",
+              players: "2 Players",
+            },
+          },
+        },
+        {
+          id: "memory-match",
+          name: "Memory Match Duel",
+          description:
+            "Turn-based memory matching game with animals (4×4, 5×4, or 6×6 grid)",
+          players: "2 Players",
+          status: "available",
+          icon: "🐾",
+          color: "#ff9800",
+          version: "1.0.0",
+          translations: {
+            vi: {
+              name: "Thử Trí Nhớ",
+              description: "Lật thẻ thú cưng, ai nhớ nhanh hơn sẽ thắng",
+              players: "2 người chơi",
+            },
+            en: {
+              name: "Memory Match Duel",
+              description:
+                "Turn-based memory matching game with animals (4×4, 5×4, or 6×6 grid)",
+              players: "2 Players",
+            },
+          },
+        },
+        {
+          id: "sushi-poison",
+          name: "Poison Sushi Duel",
+          description: "Pick 2 poisoned sushi pieces and take turns eating them",
+          players: "2 Players",
+          status: "available",
+          icon: "🍣",
+          color: "#ff9a9e",
+          version: "1.0.0",
+          translations: {
+            vi: {
+              name: "Sushi Có Độc!",
+              description: "Giấu độc và đoán xem đối thủ ăn miếng nào",
+              players: "2 người chơi",
+            },
+            en: {
+              name: "Poison Sushi Duel",
+              description: "Pick 2 poisoned sushi pieces and take turns eating them",
+              players: "2 Players",
+            },
+          },
+        },
+        {
+          id: "smart-shop",
+          name: "Smart Shop Race",
+          description:
+            "Educational shopping race - count, colors & categories (3 levels)",
+          players: "2 Players",
+          status: "available",
+          icon: "🛒",
+          color: "#9c27b0",
+          version: "1.0.0",
+          translations: {
+            vi: {
+              name: "Đua Siêu Thị",
+              description: "Đi chợ vui vẻ: đếm đồ, phân loại màu sắc",
+              players: "2 người chơi",
+            },
+            en: {
+              name: "Smart Shop Race",
+              description:
+                "Educational shopping race - count, colors & categories (3 levels)",
+              players: "2 Players",
+            },
+          },
+        },
+        {
+          id: "magic-letter",
+          name: "Magic Letter Hunt",
+          description:
+            "Vietnamese letter learning game - find letters, words & bigrams (3 levels)",
+          players: "2 Players",
+          status: "available",
+          icon: "✨",
+          color: "#f093fb",
+          version: "1.0.0",
+          translations: {
+            vi: {
+              name: "Săn Chữ Thần Kỳ",
+              description: "Tìm chữ, ghép từ tiếng Việt qua 3 cấp độ",
+              players: "2 người chơi",
+            },
+            en: {
+              name: "Magic Letter Hunt",
+              description:
+                "Vietnamese letter learning game - find letters, words & bigrams (3 levels)",
+              players: "2 Players",
+            },
+          },
+        },
+        {
+          id: "candy-tower",
+          name: "Candy Tower Turn",
+          description: "Stack candies on a wobbly tower and stay balanced",
+          players: "2 Players",
+          status: "available",
+          icon: "🍬",
+          color: "#ff6f91",
+          version: "1.0.0",
+          translations: {
+            vi: {
+              name: "Xây Tháp Kẹo",
+              description: "Đặt kẹo lên tháp, giữ cân bằng trong 10s",
+              players: "2 người chơi",
+            },
+            en: {
+              name: "Candy Tower Turn",
+              description: "Stack candies on a wobbly tower and stay balanced",
+              players: "2 Players",
+            },
+          },
         },
       ],
     };
@@ -215,14 +279,14 @@ function renderGames() {
     gameCard.className = `game-card ${game.status}`;
     gameCard.dataset.gameId = game.id;
 
-    const localizedGame = getLocalizedGameData(game.id);
+    const localizedGame = getLocalizedGameData(game);
     const gameName = localizedGame?.name || game.name;
     const gameDescription = localizedGame?.description || game.description;
     const gamePlayers = localizedGame?.players || game.players;
     const badgeText =
       game.status === "available"
-        ? t("game_badge_available", "Play Now")
-        : t("game_badge_coming", "Coming Soon");
+        ? getBadgeLabel("available")
+        : getBadgeLabel("coming");
 
     gameCard.innerHTML = `
             <div class="game-status-badge ${game.status}">
@@ -477,6 +541,7 @@ function selectPlayerSlot(slot) {
     card.classList.remove("active-slot");
   });
   document.getElementById(`selectedPlayer${slot}`).classList.add("active-slot");
+  renderAvailablePlayers(slot);
 }
 
 function selectAvailablePlayer(id) {
@@ -495,6 +560,7 @@ function selectAvailablePlayer(id) {
   document.querySelectorAll(".selected-player-card").forEach((card) => {
     card.classList.remove("active-slot");
   });
+  renderAvailablePlayers();
 
   // Check if both slots filled
   validatePlayerSelection();
@@ -527,13 +593,39 @@ function updateSelectedPlayerSlot(slot, player) {
   }
 }
 
-function renderAvailablePlayers() {
+function renderAvailablePlayers(filterSlot = null) {
   const availablePlayers = document.getElementById("availablePlayers");
+  const container = document.getElementById("availablePlayersContainer");
+  if (!availablePlayers || !container) return;
+
   const players = getPlayers();
+  const selectedIds = [];
+  [1, 2].forEach((slot) => {
+    const el = document.getElementById(`selectedPlayer${slot}`);
+    if (el && el.dataset.playerId) {
+      selectedIds.push(el.dataset.playerId);
+    }
+  });
 
-  availablePlayers.innerHTML = "<h4>Available Players:</h4>";
+  const filtered = players.filter(
+    (player) => !selectedIds.includes(player.id)
+  );
 
-  players.forEach((player, index) => {
+  availablePlayers.innerHTML = "";
+
+  if (!filterSlot) {
+    container.classList.add("hidden");
+    return;
+  }
+
+  container.classList.remove("hidden");
+
+  if (!filtered.length) {
+    availablePlayers.innerHTML = "<p class=\"available-player-empty\">No players available</p>";
+    return;
+  }
+
+  filtered.forEach((player, index) => {
     const playerItem = document.createElement("div");
     playerItem.className = "available-player-item";
     playerItem.onclick = () => selectAvailablePlayer(player.id);
@@ -882,51 +974,7 @@ function showSetupScreen(playerNum) {
   updateSetupStatus("Select a ship, hover board to preview");
   document.getElementById("readyButton").disabled = !isSetupComplete();
 
-  // Update captain avatar display
-  updateSetupCaptainAvatar();
-
   showScreen("setupScreen");
-}
-
-function updateSetupCaptainAvatar() {
-  const player = getCurrentPlayer();
-  const avatarContainer = document.getElementById("setupCaptainAvatar");
-
-  if (player.captainImage) {
-    avatarContainer.innerHTML = `<img src="${player.captainImage}" alt="Captain" class="uploaded-avatar">`;
-  } else {
-    // Show default SVG
-    avatarContainer.innerHTML = `
-            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
-            </svg>
-        `;
-  }
-}
-
-function handleCaptainUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  // Validate file type
-  if (!file.type.startsWith("image/")) {
-    alert("Please upload an image file");
-    return;
-  }
-
-  // Validate file size (max 2MB)
-  if (file.size > 20 * 1024 * 1024) {
-    alert("Image size should be less than 2MB");
-    return;
-  }
-
-  imageToBase64(file, (base64) => {
-    const player = getCurrentPlayer();
-    player.captainImage = base64;
-    updateSetupCaptainAvatar();
-  });
 }
 
 function resetPlayerData(player) {
@@ -2058,9 +2106,21 @@ function rematch() {
 }
 
 function quitGame() {
-  if (confirm("Are you sure you want to quit the current game?")) {
-    goHome();
+  const modal = document.getElementById("quitGameModal");
+  if (modal) {
+    modal.classList.add("active");
   }
+}
+
+function confirmQuitGame() {
+  const modal = document.getElementById("quitGameModal");
+  if (modal) modal.classList.remove("active");
+  goHome();
+}
+
+function cancelQuitGame() {
+  const modal = document.getElementById("quitGameModal");
+  if (modal) modal.classList.remove("active");
 }
 
 // ===== HELPER FUNCTIONS =====

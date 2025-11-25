@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,6 +10,7 @@
     <title>Game Hub - Play Multiple Games</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Game Selection Screen -->
     <div id="gameSelectionScreen" class="screen active">
@@ -23,7 +25,8 @@
             <h1 class="title" data-i18n-key="hub_title">🎮 GAME HUB</h1>
             <p class="subtitle" data-i18n-key="hub_subtitle">Choose your game</p>
 
-            <button class="btn btn-secondary btn-players" data-i18n-key="manage_players_btn" onclick="showPlayerManagement()">
+            <button class="btn btn-secondary btn-players" data-i18n-key="manage_players_btn"
+                onclick="showPlayerManagement()">
                 👥 Manage Players
             </button>
 
@@ -89,26 +92,6 @@
             <h2 id="setupTitle">Setup - Player 1</h2>
             <p class="setup-instruction">Place your ships (no touching, even corners)</p>
 
-            <!-- Captain Avatar Section -->
-            <div class="captain-section">
-                <div class="captain-avatar-container">
-                    <div class="captain-avatar" id="setupCaptainAvatar">
-                        <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                            <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
-                        </svg>
-                    </div>
-                    <div class="captain-upload">
-                        <input type="file" id="captainImageInput" accept="image/*" capture="environment" onchange="handleCaptainUpload(event)" style="display: none;">
-                        <button class="btn btn-secondary btn-small" onclick="document.getElementById('captainImageInput').click()">
-                            Upload Captain Photo
-                        </button>
-                        <p class="captain-hint">(Optional)</p>
-                    </div>
-                </div>
-            </div>
-
             <div class="ships-panel">
                 <h3>Ships left:</h3>
                 <div class="ships-container">
@@ -140,9 +123,9 @@
             </div>
 
             <div class="controls">
-                <button class="btn btn-secondary" onclick="rotateShip()">Xoay</button>
-                <button class="btn btn-secondary" onclick="randomPlacement()">Ngẫu nhiên</button>
-                <button class="btn btn-secondary" onclick="resetBoard()">Đặt lại</button>
+                <button class="btn btn-secondary btn-icon" onclick="rotateShip()" title="Xoay">🔄</button>
+                <button class="btn btn-secondary btn-icon" onclick="randomPlacement()" title="Ngẫu nhiên">🎲</button>
+                <button class="btn btn-secondary btn-icon" onclick="resetBoard()" title="Đặt lại">↺</button>
             </div>
 
             <div class="board-container">
@@ -164,7 +147,8 @@
                 <p id="setupStatus">Select a ship, hover board to preview</p>
             </div>
 
-            <button id="readyButton" class="btn btn-primary btn-large" onclick="confirmSetup()" disabled>Sẵn sàng</button>
+            <button id="readyButton" class="btn btn-primary btn-large" onclick="confirmSetup()" disabled>Sẵn
+                sàng</button>
         </div>
     </div>
 
@@ -183,22 +167,25 @@
             <div class="battle-header">
                 <h2>Battle Phase</h2>
                 <div class="captain-display">
-                    <div class="captain-avatar captain-avatar-battle" id="battleCaptainAvatar">
-                        <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                            <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
-                        </svg>
+                    <div class="captain-identity">
+                        <div class="captain-avatar captain-avatar-battle" id="battleCaptainAvatar">
+                            <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="50" fill="#4dd0e1" />
+                                <circle cx="50" cy="40" r="18" fill="#ffffff" />
+                                <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75"
+                                    fill="#ffffff" />
+                            </svg>
+                        </div>
+                        <div class="captain-name" id="battleCaptainName">Player 1</div>
                     </div>
                     <div class="turn-indicator">
-                        <div class="captain-name" id="battleCaptainName">Player 1</div>
-                        <div class="turn-label">Turn: <span id="currentTurn">Player 1</span></div>
+                        <div class="turn-label"><span id="currentTurn">Player 1</span></div>
                         <div class="ships-destroyed-label">
                             <div>Destroyed: <span id="totalShipsDestroyed">0 / 4</span></div>
                             <div class="ship-breakdown">
-                                <span class="ship-type-stat">2-cell: <span id="ship2Destroyed">0/1</span></span>
-                                <span class="ship-type-stat">3-cell: <span id="ship3Destroyed">0/2</span></span>
-                                <span class="ship-type-stat">4-cell: <span id="ship4Destroyed">0/1</span></span>
+                                <span class="ship-type-stat">Patrol Boat: <span id="ship2Destroyed">0/1</span></span>
+                                <span class="ship-type-stat">Cruiser: <span id="ship3Destroyed">0/2</span></span>
+                                <span class="ship-type-stat">Battleship: <span id="ship4Destroyed">0/1</span></span>
                             </div>
                         </div>
                     </div>
@@ -208,7 +195,6 @@
             <div class="battle-boards">
                 <div class="board-section board-section-center">
                     <h3>Battle Grid</h3>
-                    <p class="board-hint">Both players face the screen. Click to attack on your turn.</p>
                     <div class="board-container">
                         <div class="board-labels-top">
                             <span></span>
@@ -260,9 +246,9 @@
         <div class="turn-popup-content">
             <div class="turn-popup-avatar" id="turnPopupAvatar">
                 <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                    <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                    <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                    <circle cx="50" cy="50" r="50" fill="#4dd0e1" />
+                    <circle cx="50" cy="40" r="18" fill="#ffffff" />
+                    <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff" />
                 </svg>
             </div>
             <div class="turn-popup-text">
@@ -280,9 +266,9 @@
             <div class="victory-captain-display">
                 <div class="victory-captain-avatar" id="victoryCaptainAvatar">
                     <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                        <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                        <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                        <circle cx="50" cy="50" r="50" fill="#4dd0e1" />
+                        <circle cx="50" cy="40" r="18" fill="#ffffff" />
+                        <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff" />
                     </svg>
                 </div>
                 <h2 id="winnerText">Player 1 WINS!</h2>
@@ -363,13 +349,15 @@
                 <div class="player-avatar-edit">
                     <div class="player-avatar-preview" id="playerAvatarPreview">
                         <svg class="default-avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="50" fill="#4dd0e1"/>
-                            <circle cx="50" cy="40" r="18" fill="#ffffff"/>
-                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75" fill="#ffffff"/>
+                            <circle cx="50" cy="50" r="50" fill="#4dd0e1" />
+                            <circle cx="50" cy="40" r="18" fill="#ffffff" />
+                            <path d="M 25 75 Q 25 55, 50 55 Q 75 55, 75 75 Q 75 85, 50 90 Q 25 85, 25 75"
+                                fill="#ffffff" />
                         </svg>
                     </div>
                     <input type="file" id="playerAvatarInput" accept="image/*" style="display: none;">
-                    <button class="btn btn-secondary btn-small" onclick="document.getElementById('playerAvatarInput').click()">
+                    <button class="btn btn-secondary btn-small"
+                        onclick="document.getElementById('playerAvatarInput').click()">
                         Upload Photo
                     </button>
                 </div>
@@ -384,7 +372,8 @@
                         <input type="checkbox" id="playerChildInput">
                         <span>Đây là bé (Kid support)</span>
                     </label>
-                    <p class="child-flag-note">Chúng tôi sẽ bật gợi ý & giao diện nhẹ nhàng hơn cho bé trong các game phù hợp.</p>
+                    <p class="child-flag-note">Chúng tôi sẽ bật gợi ý & giao diện nhẹ nhàng hơn cho bé trong các game
+                        phù hợp.</p>
                 </div>
             </div>
 
@@ -419,8 +408,9 @@
                 </div>
             </div>
 
-            <div class="available-players" id="availablePlayers">
-                <!-- Available players will be shown here -->
+            <div class="available-players hidden" id="availablePlayersContainer">
+                <h4>Available Players</h4>
+                <div id="availablePlayers"></div>
             </div>
 
             <div class="modal-buttons">
@@ -432,8 +422,22 @@
         </div>
     </div>
 
+    <div id="quitGameModal" class="modal">
+        <div class="modal-content">
+            <h2 data-i18n-key="quit_modal_title">Quit Game?</h2>
+            <p data-i18n-key="quit_modal_text">Are you sure you want to quit the current game?</p>
+            <div class="actions-row" style="justify-content:center; margin-top:20px;">
+                <button class="btn btn-secondary" data-i18n-key="quit_modal_cancel"
+                    onclick="cancelQuitGame()">Cancel</button>
+                <button class="btn btn-primary" data-i18n-key="quit_modal_confirm" onclick="confirmQuitGame()">Yes,
+                    quit</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     <script src="players.js"></script>
     <script src="game.js"></script>
 </body>
+
 </html>

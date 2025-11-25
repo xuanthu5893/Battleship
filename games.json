@@ -1,4 +1,14 @@
 {
+  "badges": {
+    "available": {
+      "vi": "Chơi ngay",
+      "en": "Play Now"
+    },
+    "coming": {
+      "vi": "Sắp ra mắt",
+      "en": "Coming Soon"
+    }
+  },
   "games": [
     {
       "id": "battleship",
@@ -8,7 +18,19 @@
       "status": "available",
       "icon": "🚢",
       "color": "#4dd0e1",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "translations": {
+        "vi": {
+          "name": "Hải Chiến 2 Người",
+          "description": "Đặt tàu và đấu trí trên biển (chơi luân phiên)",
+          "players": "2 người chơi"
+        },
+        "en": {
+          "name": "Battleship 2P",
+          "description": "Classic naval warfare strategy game (Offline Pass-Play)",
+          "players": "2 Players"
+        }
+      }
     },
     {
       "id": "memory-match",
@@ -18,7 +40,41 @@
       "status": "available",
       "icon": "🐾",
       "color": "#ff9800",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "translations": {
+        "vi": {
+          "name": "Thử Trí Nhớ",
+          "description": "Lật thẻ thú cưng, ai nhớ nhanh hơn sẽ thắng",
+          "players": "2 người chơi"
+        },
+        "en": {
+          "name": "Memory Match Duel",
+          "description": "Turn-based memory matching game with animals (4×4, 5×4, or 6×6 grid)",
+          "players": "2 Players"
+        }
+      }
+    },
+    {
+      "id": "sushi-poison",
+      "name": "Poison Sushi Duel",
+      "description": "Pick 2 poisoned sushi pieces and take turns eating them",
+      "players": "2 Players",
+      "status": "available",
+      "icon": "🍣",
+      "color": "#ff9a9e",
+      "version": "1.0.0",
+      "translations": {
+        "vi": {
+          "name": "Sushi Có Độc!",
+          "description": "Giấu độc và đoán xem đối thủ ăn miếng nào",
+          "players": "2 người chơi"
+        },
+        "en": {
+          "name": "Poison Sushi Duel",
+          "description": "Pick 2 poisoned sushi pieces and take turns eating them",
+          "players": "2 Players"
+        }
+      }
     },
     {
       "id": "smart-shop",
@@ -28,7 +84,19 @@
       "status": "available",
       "icon": "🛒",
       "color": "#9c27b0",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "translations": {
+        "vi": {
+          "name": "Đua Siêu Thị",
+          "description": "Đi chợ vui vẻ: đếm đồ, phân loại màu sắc",
+          "players": "2 người chơi"
+        },
+        "en": {
+          "name": "Smart Shop Race",
+          "description": "Educational shopping race - count, colors & categories (3 levels)",
+          "players": "2 Players"
+        }
+      }
     },
     {
       "id": "magic-letter",
@@ -38,57 +106,41 @@
       "status": "available",
       "icon": "✨",
       "color": "#f093fb",
-      "version": "1.0.0"
-    },
-    {
-      "id": "sushi-poison",
-      "name": "Sushi Có Độc!",
-      "description": "Poison Sushi Duel - chọn 2 miếng tẩm độc rồi ăn lần lượt",
-      "players": "2 Players",
-      "status": "available",
-      "icon": "🍣",
-      "color": "#ff9a9e",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "translations": {
+        "vi": {
+          "name": "Săn Chữ Thần Kỳ",
+          "description": "Tìm chữ, ghép từ tiếng Việt qua 3 cấp độ",
+          "players": "2 người chơi"
+        },
+        "en": {
+          "name": "Magic Letter Hunt",
+          "description": "Vietnamese letter learning game - find letters, words & bigrams (3 levels)",
+          "players": "2 Players"
+        }
+      }
     },
     {
       "id": "candy-tower",
-      "name": "Xây Tháp Kẹo",
-      "description": "Candy Tower Turn - đặt kẹo lên tháp, giữ cân bằng, 10s mỗi lượt",
+      "name": "Candy Tower Turn",
+      "description": "Stack candies on a wobbly tower and stay balanced",
       "players": "2 Players",
       "status": "available",
       "icon": "🍬",
       "color": "#ff6f91",
-      "version": "1.0.0"
-    },
-    {
-      "id": "tictactoe",
-      "name": "Tic Tac Toe",
-      "description": "Classic X and O game (Coming Soon)",
-      "players": "2 Players",
-      "status": "coming_soon",
-      "icon": "❌",
-      "color": "#ff6b6b",
-      "version": "0.0.0"
-    },
-    {
-      "id": "connect4",
-      "name": "Connect Four",
-      "description": "Connect 4 pieces in a row (Coming Soon)",
-      "players": "2 Players",
-      "status": "coming_soon",
-      "icon": "🔴",
-      "color": "#ffd93d",
-      "version": "0.0.0"
-    },
-    {
-      "id": "chess",
-      "name": "Chess",
-      "description": "Classic strategy board game (Coming Soon)",
-      "players": "2 Players",
-      "status": "coming_soon",
-      "icon": "♟️",
-      "color": "#a8dadc",
-      "version": "0.0.0"
+      "version": "1.0.0",
+      "translations": {
+        "vi": {
+          "name": "Xây Tháp Kẹo",
+          "description": "Đặt kẹo lên tháp, giữ cân bằng trong 10s",
+          "players": "2 người chơi"
+        },
+        "en": {
+          "name": "Candy Tower Turn",
+          "description": "Stack candies on a wobbly tower and stay balanced",
+          "players": "2 Players"
+        }
+      }
     }
   ]
 }

@@ -106,7 +106,9 @@
     </div>
 
     <!-- Toast -->
-    <div id="sushiToast" class="toast"></div>
+    <div id="sushiToast" class="toast">
+        <div class="toast-content" id="sushiToastMessage"></div>
+    </div>
 
     <!-- How To Play Modal -->
     <div id="howToPlayModal" class="modal">
@@ -140,6 +142,17 @@
             <h2>UỐNG THUỐC GIẢI</h2>
             <p id="antidoteMessage">Bé đã kịp uống thuốc giải!</p>
             <button class="btn btn-primary" onclick="continueAfterAntidote()">Tiếp tục</button>
+        </div>
+    </div>
+
+    <div id="quitConfirmModal" class="modal">
+        <div class="modal-content">
+            <h2>Quit Game?</h2>
+            <p>Are you sure you want to quit the current game?</p>
+            <div class="actions-row" style="justify-content:center; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="cancelQuitBattle()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmQuitBattle()">Yes, quit</button>
+            </div>
         </div>
     </div>
 

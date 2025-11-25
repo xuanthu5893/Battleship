@@ -333,24 +333,6 @@ h3 {
     color: #b0bec5;
 }
 
-/* ===== CAPTAIN AVATAR =====*/
-.captain-section {
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-.captain-avatar-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
 .captain-avatar {
     width: 60px;
     height: 60px;
@@ -363,8 +345,8 @@ h3 {
 }
 
 .captain-avatar-battle {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border: 3px solid #4dd0e1;
     box-shadow: 0 4px 16px rgba(77, 208, 225, 0.5);
     animation: captainPulse 2s ease-in-out infinite;
@@ -392,37 +374,73 @@ h3 {
     display: block;
 }
 
-.captain-upload {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-}
-
 .btn-small {
     padding: 10px 20px;
     font-size: 0.95em;
 }
 
-.captain-hint {
-    font-size: 0.85em;
-    color: #b0bec5;
-    font-style: italic;
-    margin: 0;
+.btn-icon {
+    min-width: 50px;
+    min-height: 50px;
+    width: 50px;
+    height: 50px;
+    padding: 8px;
+    font-size: 1.5em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+    .ships-panel {
+        max-width: 280px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .ships-container {
+        gap: 6px;
+    }
+
+    .ship-cell {
+        width: 20px;
+        height: 20px;
+    }
+
+    .ship-count {
+        font-size: 0.95em;
+    }
+
+    .ship-item {
+        gap: 6px;
+        padding: 6px;
+    }
+
+    .btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+        padding: 6px;
+        font-size: 1.3em;
+        border-radius: 10px;
+    }
 }
 
 .ships-panel {
     background: rgba(0, 0, 0, 0.3);
     border: 2px solid #546e7a;
     border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 16px;
+    margin: 0 auto 20px;
+    max-width: 360px;
 }
 
 .ships-container {
     display: flex;
-    justify-content: space-around;
-    gap: 20px;
+    justify-content: center;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
@@ -430,9 +448,9 @@ h3 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
-    padding: 10px;
+    padding: 8px;
     border: 2px solid transparent;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -455,7 +473,7 @@ h3 {
 
 .ship-preview {
     display: flex;
-    gap: 2px;
+    gap: 1px;
 }
 
 .ship-preview.vertical {
@@ -463,8 +481,8 @@ h3 {
 }
 
 .ship-cell {
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
     border: 2px solid #1a252f;
     border-radius: 3px;
@@ -527,7 +545,13 @@ h3 {
     justify-content: center;
     gap: 15px;
     margin-bottom: 30px;
-    flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+    .controls {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
 }
 
 /* ===== BOARD ===== */
@@ -837,7 +861,16 @@ h3 {
 .captain-display {
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.captain-identity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1 1 240px;
 }
 
 .captain-name {
@@ -850,13 +883,13 @@ h3 {
 .turn-indicator {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 2 1 320px;
 }
 
 .turn-label {
-    font-size: 1.1em;
-    color: #4dd0e1;
-    font-weight: bold;
+    display: none;
 }
 
 .ships-destroyed-label {
@@ -962,21 +995,35 @@ h3 {
 /* ===== TOAST ===== */
 .toast {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 3000;
+}
+
+.toast.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.toast .toast-content {
     background: rgba(15, 32, 39, 0.98);
     border: 3px solid #4dd0e1;
     border-radius: 12px;
     padding: 30px 50px;
-    z-index: 3000;
     text-align: center;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-    transition: transform 0.3s ease;
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
 }
 
-.toast.show {
-    transform: translate(-50%, -50%) scale(1);
+.toast.show .toast-content {
+    transform: scale(1);
 }
 
 .toast-content h3 {
@@ -1293,8 +1340,8 @@ h3 {
     }
 
     .captain-avatar-battle {
-        width: 80px;
-        height: 80px;
+        width: 65px;
+        height: 65px;
     }
 
     .captain-name {
@@ -1307,25 +1354,54 @@ h3 {
 
     .ships-destroyed-label {
         font-size: 0.85em;
+        align-items: center;
+        text-align: center;
     }
 
     .ship-breakdown {
-        gap: 8px;
+        gap: 6px;
         font-size: 0.75em;
+        flex-direction: column;
+        width: 100%;
     }
 
     .ship-type-stat {
         padding: 2px 6px;
+        width: 100%;
+        text-align: center;
     }
 
     .battle-header {
         flex-direction: column;
         gap: 15px;
+        padding: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .battle-header h2 {
+        font-size: 1.25em;
+        margin: 0;
     }
 
     .captain-display {
-        flex-direction: column;
-        text-align: center;
+        flex-direction: row;
+        text-align: left;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .captain-identity,
+    .turn-indicator {
+        flex: 1 1 45%;
+        align-items: center;
+    }
+
+    .turn-indicator {
+        width: auto;
+        justify-content: flex-start;
+        text-align: left;
+        gap: 10px;
     }
 
     .battle-boards {
@@ -1365,15 +1441,35 @@ h3 {
     }
 
     .controls {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 10px;
     }
 
     .controls .btn {
-        width: 100%;
+        width: auto;
+        flex: 0 0 auto;
     }
 
     .legend {
-        font-size: 0.9em;
+        font-size: 0.75em;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .legend-item {
+        gap: 4px;
+    }
+
+    .cell-demo {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7em;
+    }
+
+    #battleStatus {
+        font-size: 0.85em;
     }
 
     .toast-content h3 {
@@ -1437,6 +1533,28 @@ h3 {
 
     .board-wrapper {
         grid-template-columns: 20px 1fr;
+    }
+
+    .battle-header {
+        padding: 10px;
+    }
+
+    .battle-header h2 {
+        font-size: 1.1em;
+    }
+
+    .captain-avatar-battle {
+        width: 55px;
+        height: 55px;
+    }
+
+    .ship-breakdown {
+        font-size: 0.7em;
+    }
+
+    .turn-label {
+        font-size: 0.95em;
+        padding: 3px 10px;
     }
 }
 
@@ -2197,6 +2315,10 @@ svg.default-avatar {
 
 .player-card-name .player-role-badge {
     margin-left: 0;
+}
+
+.available-players.hidden {
+    display: none;
 }
 
 .available-players {

@@ -2,7 +2,7 @@
 const GRID_SIZE = 5;
 const TOTAL_ROUNDS = 10;
 const ROUND_DURATION = 20; // seconds
-const HINT_DELAY = 1500; // ms - delay before showing hint to P1
+const HINT_DELAY = 1500; // ms - delay before showing hint
 const HINT_DURATION = 800; // ms - how long hint shows
 const P2_DELAY = 300; // ms - optional delay for P2 scoring
 const ANSWER_HIGHLIGHT_DURATION = 1500; // ms
@@ -596,22 +596,35 @@ function handleTimeout() {
 }
 
 // ===== HINT SYSTEM =====
+function getHintTargetPlayer() {
+    const { p1, p2 } = gameState.players;
+
+    // Prefer whichever player is marked as child
+    if (p1.isChild && !p2.isChild) return 'p1';
+    if (p2.isChild && !p1.isChild) return 'p2';
+
+    // If both (or none) are marked as child, default to Player 1 to keep legacy behavior
+    return 'p1';
+}
+
 function startHintTimer() {
     gameState.hintTimer = setTimeout(() => {
-        // Only show hint if P1 hasn't selected anything yet
-        if (gameState.selections.p1.length === 0 && !gameState.isProcessing) {
-            showHint();
+        const hintPlayer = getHintTargetPlayer();
+        // Only show hint if target player hasn't selected anything yet
+        if (gameState.selections[hintPlayer].length === 0 && !gameState.isProcessing) {
+            showHint(hintPlayer);
         }
     }, HINT_DELAY);
 }
 
-function showHint() {
-    // Only show hints on P1's board
-    const correctIndices = getCorrectIndices('p1');
+function showHint(player) {
+    const hintPlayer = player || getHintTargetPlayer();
+    const selectionClass = `selected-${hintPlayer}`;
+    const correctIndices = getCorrectIndices(hintPlayer);
 
     correctIndices.forEach(index => {
-        const itemEl = document.querySelector(`.shelf-item[data-player="p1"][data-index="${index}"]`);
-        if (itemEl && !itemEl.classList.contains('selected-p1')) {
+        const itemEl = document.querySelector(`.shelf-item[data-player="${hintPlayer}"][data-index="${index}"]`);
+        if (itemEl && !itemEl.classList.contains(selectionClass)) {
             itemEl.classList.add('hint-highlight');
             setTimeout(() => {
                 itemEl.classList.remove('hint-highlight');
